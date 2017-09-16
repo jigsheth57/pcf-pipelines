@@ -1,0 +1,47 @@
+# Copyright 2017-Present Pivotal Software, Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Pivotal Net Token to download binaries from https://network.pivotal.io
+pivnet_token: CHANGEME
+metrics_major_minor_version: ^1\.9\..*$
+
+# The domain to access Operations Manager; opsman.<ert-domain>
+opsman_domain_or_ip_address:
+
+# Operations Manager credentials
+OPSMAN_USER:
+OPSMAN_PASSWORD:
+
+metrics_admin_id:
+metrics_admin_password:
+
+metrics_errands_to_disable: none
+
+# Prefix to use for Terraform-managed infrastructure, e.g. 'pcf-terraform'
+terraform_prefix:
+
+# For terraform state file
+S3_ENDPOINT: https://s3.amazonaws.com
+S3_OUTPUT_BUCKET: CHANGEME
+
+# This key must be a key with admin access
+TF_VAR_aws_access_key: CHANGEME
+TF_VAR_aws_secret_key: CHANGEME
+
+TF_VAR_az1: us-east-1a
+TF_VAR_az2: us-east-1b
+TF_VAR_az3: us-east-1d
+
+# The ERT domain to use; *.cfapps.<ert-domain> and *.sys.<ert-domain> will be used
+ERT_DOMAIN: pcfapps.org
