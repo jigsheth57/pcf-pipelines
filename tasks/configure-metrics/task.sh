@@ -11,7 +11,7 @@ metrics_network=$(
     '
     {
       "network": {
-        "name": (if $iaas == "aws" then "infrastructure" end),
+        "name": (if $iaas == "aws" then "infrastructure" else "deployment" end),
       },
       "other_availability_zones": ($other_availability_zones | split(",") | map({name: .})),
       "singleton_availability_zone": {
