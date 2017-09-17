@@ -30,7 +30,7 @@ variable "opsman_allow_https_cidr_ranges" {
 
 variable "opsman_instance_type" {
     description = "Instance Type for OpsMan"
-    default = "m3.large"
+    default = "m4.large"
 }
 variable "nat_instance_type" {
     description = "Instance Type for NAT instances"
@@ -38,7 +38,7 @@ variable "nat_instance_type" {
 }
 variable "db_instance_type" {
     description = "Instance Type for RDS instance"
-    default = "db.m3.large"
+    default = "db.m4.large"
 }
 
 variable "vpc_cidr" {
@@ -151,4 +151,3 @@ variable "infra_subnet_cidr_az1" {
 variable "nat_ip_az3" {
     default = "10.0.2.6"
 }
-
