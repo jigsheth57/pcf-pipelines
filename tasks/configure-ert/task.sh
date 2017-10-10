@@ -209,6 +209,7 @@ cf_properties=$(
       ".properties.route_services": { "value": "enable" },
       ".ha_proxy.skip_cert_verify": { "value": true },
       ".properties.route_services.enable.ignore_ssl_cert_verification": { "value": true },
+      ".properties.networking_point_of_entry.external_ssl.ssl_ciphers": { "value": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256:TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384" },
       ".properties.security_acknowledgement": { "value": "X" },
       ".properties.system_database": { "value": "external" },
       ".properties.system_database.external.port": { "value": "3306" },
