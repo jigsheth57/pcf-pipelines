@@ -26,6 +26,10 @@ saml_certificates=$(generate_cert "${saml_domains[*]}")
 saml_cert_pem=`echo $saml_certificates | jq --raw-output '.certificate'`
 saml_key_pem=`echo $saml_certificates | jq --raw-output '.key'`
 
+# override to make it equals to ERT certs.
+saml_cert_pem=$pcf_ert_ssl_cert
+saml_key_pem=$pcf_ert_ssl_key
+
 if [[ "${pcf_iaas}" == "aws" ]]; then
   cd terraform-state
     output_json=$(terraform output --json -state *.tfstate)
