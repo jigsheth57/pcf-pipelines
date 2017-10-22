@@ -321,7 +321,7 @@ jobs:
       resource: pivnet-elastic-runtime
       params:
         globs:
-        - "*pivotal"
+        - "cf*.pivotal"
 
   - task: upload-tile
     file: pcf-pipelines/tasks/upload-product-and-stemcell/task.yml
@@ -375,11 +375,14 @@ jobs:
       COMPANY_NAME: {{company_name}}
       AUTHENTICATION_MODE: {{authentication_mode}}
       LOGGREGATOR_ENDPOINT_PORT: {{loggregator_endpoint_port}}
-      SSL_TERMINATION: {{pcf_ert_networking_pointofentry}}
       SSL_CERT: {{pcf_ert_ssl_cert}}
       SSL_PRIVATE_KEY: {{pcf_ert_ssl_key}}
       SAML_SSL_CERT: {{pcf_ert_saml_cert}}
       SAML_SSL_PRIVATE_KEY: {{pcf_ert_saml_key}}
+      HAPROXY_FORWARD_TLS: {{haproxy_forward_tls}}
+      HAPROXY_BACKEND_CA: {{haproxy_backend_ca}}
+      ROUTER_TLS_CIPHERS: {{router_tls_ciphers}}
+      HAPROXY_TLS_CIPHERS: {{haproxy_tls_ciphers}}
       DISABLE_HTTP_PROXY: {{disable_http_proxy}}
       TCP_ROUTING: {{tcp_routing}}
       TCP_ROUTING_PORTS: {{tcp_routing_ports}}
@@ -432,13 +435,10 @@ jobs:
       SSH_STATIC_IPS: {{ssh_static_ips}}
       CONSUL_SERVER_INSTANCES: {{consul_server_instances}}
       NATS_INSTANCES: {{nats_instances}}
-      ETCD_TLS_SERVER_INSTANCES: {{etcd_tls_server_instances}}
       NFS_SERVER_INSTANCES: {{nfs_server_instances}}
       MYSQL_PROXY_INSTANCES: {{mysql_proxy_instances}}
       MYSQL_INSTANCES: {{mysql_instances}}
       BACKUP_PREPARE_INSTANCES: {{backup_prepare_instances}}
-      CCDB_INSTANCES: {{ccdb_instances}}
-      UAADB_INSTANCES: {{uaadb_instances}}
       UAA_INSTANCES: {{uaa_instances}}
       CLOUD_CONTROLLER_INSTANCES: {{cloud_controller_instances}}
       HA_PROXY_INSTANCES: {{ha_proxy_instances}}
@@ -469,7 +469,7 @@ jobs:
       DIEGO_BRAIN_NSX_LB_POOL_NAME: ""
       DIEGO_BRAIN_NSX_LB_SECURITY_GROUP: ""
       DIEGO_BRAIN_NSX_LB_PORT: ""
-
+      HAPROXY_FLOATING_IPS: ""
 ###########################
 ## Job - Deploy    ERT   ##
 ###########################

@@ -11,6 +11,13 @@ In the `create-infrastructure` job, there is a [race condition](https://github.c
 
 #### Error message: ####
    ```
+   “{”errors”:{“.properties.networking_point_of_entry.external_ssl.ssl_ciphers”:[“Value can’t be blank”]}}”
+   ```
+   
+   **Solution:** pcf-pipelines is not compatible with ERT 1.11.14. Redeploy with a [compatible](https://github.com/pivotal-cf/pcf-pipelines#install-pcf-pipelines) version. 
+
+#### Error message: ####
+   ```
    Error applying plan:
 
    1 error(s) occurred:
@@ -32,3 +39,23 @@ In the `create-infrastructure` job, there is a [race condition](https://github.c
     
    
    **Solution:** Check your AMI for the NAT boxes.
+
+
+#### Error message: ####
+
+    ssh: Could not resolve hostname opsman.sle1.aws.customer0.net: Name or service not known
+    lost connection
+
+
+
+   **Solution:** The parent zone (aws.customer0.net) is not delegating to the zone created via terraform. You need to add the NS records for (sle1.aws.customer0.net) in the parent zone in AWS Route53. 
+   
+
+#### Error message: ####
+
+    Error
+    pcf-pipelines/tasks/stage-product/task.sh: line 19: ./pivnet-product/metadata.json: No such file or directory
+
+
+
+   **Solution:** You are not using the PivNet resource, and are most likely using a different repository manager like Artifactory. For more information, and a possible workaround, see this github [issue](https://github.com/pivotal-cf/pcf-pipelines/issues/192).

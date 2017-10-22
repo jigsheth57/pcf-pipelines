@@ -5,7 +5,7 @@ gcp_project_id: CHANGEME
 gcp_service_account_key: |
   CHANGEME
 
-# Identifier to prepend to GCP infrastructure names/labels
+# Identifier to prepend to GCP infrastructure names/labels; this should be globally unique
 gcp_resource_prefix: concourse-terraform
 
 # GCP region
@@ -47,6 +47,16 @@ opsman_domain_or_ip_address: CHANGEME # This should be your pcf_ert_domain with 
 pcf_ert_ssl_cert: generate
 pcf_ert_ssl_key:
 
+haproxy_forward_tls: enable # If enabled HAProxy will forward all requests to the router over TLS (enable|disable)
+haproxy_backend_ca:         # HAProxy will use the CA provided to verify the certificates provided by the router.
+
+routing_disable_http: false
+
+# An ordered, colon-delimited list of Golang supported TLS cipher suites in OpenSSL format.
+# Operators should verify that these are supported by any clients or downstream components that will initiate TLS handshakes with the Router/HAProxy.
+router_tls_ciphers:         # The recommended setting is "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384".
+haproxy_tls_ciphers:        # The recommended setting is "DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384".
+
 # Errands to disable prior to deploying ERT
 # Valid values:
 #   all
@@ -64,10 +74,10 @@ pcf_ert_ssl_key:
 ert_errands_to_disable: none
 
 # PCF Operations Manager minor version to install
-opsman_major_minor_version: ^1\.11\..*$
+opsman_major_minor_version: ^1\.12\..*$
 
 # PCF Elastic Runtime minor version to install
-ert_major_minor_version: ^1\.11\..*$
+ert_major_minor_version: ^1\.12\..*$
 
 # DB Creds
 # Usernames must be 16 characters or fewer
@@ -88,7 +98,7 @@ db_routing_password: CHANGEME
 
 db_accountdb_username: CHANGEME
 db_accountdb_password: CHANGEME
-db_networkpolicyserverdb_username: CHANGEME
+db_networkpolicyserverdb_username: CHANGEME  # There is a 16 character limit for these values
 db_networkpolicyserverdb_password: CHANGEME
 db_nfsvolumedb_username: CHANGEME
 db_nfsvolumedb_password: CHANGEME

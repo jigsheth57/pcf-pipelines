@@ -250,6 +250,7 @@ jobs:
         source:
           repository: czero/cflinuxfs2
       inputs:
+      - name: pcf-pipelines-combined-version
       - name: pcf-pipelines-tarball
       - name: czero-cflinuxfs2
       outputs:
@@ -261,7 +262,7 @@ jobs:
         - |
           set -eu
 
-          version=$(cat pcf-pipelines-tarball/metadata.json | jq --raw-output '.Release.Version')
+          version=$(cat pcf-pipelines-combined-version/version)
           digest=$(cat czero-cflinuxfs2/digest)
 
           echo "Creating tarball with version ${version}-${digest}..."
