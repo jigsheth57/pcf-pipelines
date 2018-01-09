@@ -11,14 +11,16 @@ function delete-opsman-installation() {
     om-linux \
       --target "https://${OPSMAN_DOMAIN_OR_IP_ADDRESS}" \
       --skip-ssl-validation \
-      --username ${OPSMAN_USERNAME} \
-      --password ${OPSMAN_PASSWORD} \
+      --client-id "${OPSMAN_CLIENT_ID}" \
+      --client-secret "${OPSMAN_CLIENT_SECRET}" \
+      --username "${OPSMAN_USERNAME}" \
+      --password "${OPSMAN_PASSWORD}" \
       delete-installation
   fi
 }
 
 function delete-opsman() {
-  az login --service-principal -u $AZURE_SERVICE_PRINCIPAL_ID -p $AZURE_SERVICE_PRINCIPAL_PASSWORD --tenant $AZURE_TENANT_ID
+  az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
   local opsman_vms=$(az vm list -g $AZURE_TERRAFORM_PREFIX | jq -r ".[].name | select(. |startswith(\"$AZURE_TERRAFORM_PREFIX-ops-manager\"))")
 
   for om_vm_name in $opsman_vms; do
@@ -32,10 +34,12 @@ function delete-infrastructure() {
   echo "Executing Terraform Destroy ...."
   echo "=============================================================================================="
 
+  terraform init "pcf-pipelines/install-pcf/azure/terraform/${AZURE_PCF_TERRAFORM_TEMPLATE}"
+
   terraform destroy -force \
     -var "subscription_id=${AZURE_SUBSCRIPTION_ID}" \
-    -var "client_id=${AZURE_SERVICE_PRINCIPAL_ID}" \
-    -var "client_secret=${AZURE_SERVICE_PRINCIPAL_PASSWORD}" \
+    -var "client_id=${AZURE_CLIENT_ID}" \
+    -var "client_secret=${AZURE_CLIENT_SECRET}" \
     -var "tenant_id=${AZURE_TENANT_ID}" \
     -var "location=dontcare" \
     -var "env_name=dontcare" \
@@ -61,7 +65,6 @@ function delete-infrastructure() {
     -var "subnet_infra_id=dontcare" \
     -var "ops_manager_image_uri=dontcare" \
     -var "vm_admin_username=dontcare" \
-    -var "vm_admin_password=dontcare" \
     -var "vm_admin_public_key=dontcare" \
     -var "azure_multi_resgroup_network=dontcare" \
     -var "azure_multi_resgroup_pcf=dontcare" \
@@ -71,6 +74,7 @@ function delete-infrastructure() {
     -var "azure_droplets_container=dontcare" \
     -var "azure_packages_container=dontcare" \
     -var "azure_resources_container=dontcare" \
+    -var "om_disk_size_in_gb=50" \
     -state "${ROOT}/terraform-state/terraform.tfstate" \
     -state-out "${ROOT}/terraform-state-output/terraform.tfstate" \
     "pcf-pipelines/install-pcf/azure/terraform/${AZURE_PCF_TERRAFORM_TEMPLATE}"

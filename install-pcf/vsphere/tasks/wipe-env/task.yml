@@ -4,14 +4,18 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: czero/cflinuxfs2
+    repository: czero/rootfs
 inputs:
   - name: pcf-pipelines
 params:
   OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  OPSMAN_CLIENT_ID:
+  OPSMAN_CLIENT_SECRET:
   OPSMAN_USERNAME:
   OPSMAN_PASSWORD:
+  OPSMAN_IP:
   GOVC_INSECURE:
+  GOVC_CA_CERT:
   GOVC_URL:
   GOVC_USERNAME:
   GOVC_PASSWORD:

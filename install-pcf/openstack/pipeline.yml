@@ -159,6 +159,8 @@ jobs:
     file: pcf-pipelines/install-pcf/openstack/tasks/config-director/task.yml
     params:
       OPSMAN_URI: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
       OS_PROJECT_ID: {{os_project_id}}
@@ -229,6 +231,8 @@ jobs:
     file: pcf-pipelines/tasks/apply-changes/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
 
@@ -252,6 +256,8 @@ jobs:
     file: pcf-pipelines/tasks/upload-product-and-stemcell/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPS_MGR_USR: {{opsman_admin_username}}
       OPS_MGR_PWD: {{opsman_admin_password}}
       PIVNET_API_TOKEN: {{pivnet_token}}
@@ -263,9 +269,10 @@ jobs:
     file: pcf-pipelines/tasks/stage-product/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
-      PRODUCT_NAME: cf
 
 
 - name: configure-ert
@@ -285,7 +292,10 @@ jobs:
     tags: [ openstack ]
     file: pcf-pipelines/tasks/config-ert/task.yml
     params:
+      IAAS: openstack
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPS_MGR_USR: {{opsman_admin_username}}
       OPS_MGR_PWD: {{opsman_admin_password}}
       ERT_SINGLETON_JOB_AZ: {{ert_singleton_job_az}}
@@ -316,6 +326,7 @@ jobs:
       SMTP_PORT: {{smtp_port}}
       SMTP_USER: {{smtp_user}}
       SMTP_PWD: {{smtp_pwd}}
+      SMTP_ENABLE_STARTTLS_AUTO: {{smtp_enable_starttls_auto}}
       SMTP_AUTH_MECHANISM: {{smtp_auth_mechanism}}
       LDAP_URL: {{ldap_url}}
       LDAP_USER: {{ldap_user}}
@@ -356,6 +367,7 @@ jobs:
       ALLOW_APP_SSH_ACCESS: {{allow_app_ssh_access}}
       TCP_ROUTER_STATIC_IPS: {{tcp_router_static_ips}}
       SSH_STATIC_IPS: {{ssh_static_ips}}
+      MYSQL_STATIC_IPS: {{mysql_static_ips}}
       CONSUL_SERVER_INSTANCES: {{consul_server_instances}}
       NATS_INSTANCES: {{nats_instances}}
       NFS_SERVER_INSTANCES: {{nfs_server_instances}}
@@ -376,6 +388,8 @@ jobs:
       LOGGREGATOR_TC_INSTANCES: {{loggregator_traffic_controller_instances}}
       TCP_ROUTER_INSTANCES: {{tcp_router_instances}}
       SYSLOG_ADAPTER_INSTANCES: {{syslog_adapter_instances}}
+      INTERNET_CONNECTED: {{internet_connected}}
+      CONTAINER_NETWORKING_NW_CIDR: {{container_networking_nw_cidr}}
       TCP_ROUTER_NSX_SECURITY_GROUP: ""
       TCP_ROUTER_NSX_LB_EDGE_NAME: ""
       TCP_ROUTER_NSX_LB_POOL_NAME: ""
@@ -391,6 +405,11 @@ jobs:
       DIEGO_BRAIN_NSX_LB_POOL_NAME: ""
       DIEGO_BRAIN_NSX_LB_SECURITY_GROUP: ""
       DIEGO_BRAIN_NSX_LB_PORT: ""
+      MYSQL_NSX_SECURITY_GROUP: ""
+      MYSQL_NSX_LB_EDGE_NAME: ""
+      MYSQL_NSX_LB_POOL_NAME: ""
+      MYSQL_NSX_LB_SECURITY_GROUP: ""
+      MYSQL_NSX_LB_PORT: ""
       HA_PROXY_LB_NAME: ""
       SAML_SSL_CERT: {{pcf_ert_saml_cert}}
       SAML_SSL_PRIVATE_KEY: {{pcf_ert_saml_key}}
@@ -414,6 +433,8 @@ jobs:
     file: pcf-pipelines/tasks/apply-changes/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
 
@@ -441,5 +462,7 @@ jobs:
       OS_REGION_NAME: {{os_region_name}}
       OS_USER_DOMAIN_NAME: {{os_user_domain_name}}
       OPSMAN_URI: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}

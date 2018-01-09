@@ -52,6 +52,7 @@ cf_properties=$(
     --arg tcp_router_static_ips "$TCP_ROUTER_STATIC_IPS" \
     --arg company_name "$COMPANY_NAME" \
     --arg ssh_static_ips "$SSH_STATIC_IPS" \
+    --arg mysql_static_ips "$MYSQL_STATIC_IPS" \
     --arg cert_pem "$SSL_CERT" \
     --arg private_key_pem "$SSL_PRIVATE_KEY" \
     --arg haproxy_forward_tls "$HAPROXY_FORWARD_TLS" \
@@ -64,6 +65,7 @@ cf_properties=$(
     --arg smtp_port "$SMTP_PORT" \
     --arg smtp_user "$SMTP_USER" \
     --arg smtp_password "$SMTP_PWD" \
+    --arg smtp_enable_starttls_auto "$SMTP_ENABLE_STARTTLS_AUTO" \
     --arg smtp_auth_mechanism "$SMTP_AUTH_MECHANISM" \
     --arg enable_security_event_logging "$ENABLE_SECURITY_EVENT_LOGGING" \
     --arg syslog_host "$SYSLOG_HOST" \
@@ -96,6 +98,7 @@ cf_properties=$(
     --arg mysql_backups_scp_key "$MYSQL_BACKUPS_SCP_KEY" \
     --arg mysql_backups_scp_destination "$MYSQL_BACKUPS_SCP_DESTINATION" \
     --arg mysql_backups_scp_cron_schedule "$MYSQL_BACKUPS_SCP_CRON_SCHEDULE" \
+    --arg container_networking_nw_cidr "$CONTAINER_NETWORKING_NW_CIDR" \
     '
     {
       ".properties.system_blobstore": {
@@ -104,11 +107,8 @@ cf_properties=$(
       ".properties.logger_endpoint_port": {
         "value": $loggregator_endpoint_port
       },
-      ".properties.route_services": {
-        "value": $route_services
-      },
-      ".properties.route_services.enable.ignore_ssl_cert_verification": {
-        "value": $ignore_ssl_cert
+      ".properties.container_networking_network_cidr": {
+        "value": $container_networking_nw_cidr
       },
       ".properties.security_acknowledgement": {
         "value": $security_acknowledgement
@@ -154,8 +154,31 @@ cf_properties=$(
       },
       ".diego_brain.static_ips": {
         "value": $ssh_static_ips
+      },
+      ".mysql_proxy.static_ips": {
+        "value": $mysql_static_ips
       }
     }
+
+    +
+
+    # Route Services
+    if $route_services == "enable" then
+     {
+       ".properties.route_services": {
+         "value": "enable"
+       },
+       ".properties.route_services.enable.ignore_ssl_cert_verification": {
+         "value": $ignore_ssl_cert
+       }
+     }
+    else
+     {
+       ".properties.route_services": {
+         "value": "disable"
+       }
+     }
+    end
 
     +
 
@@ -250,7 +273,7 @@ cf_properties=$(
           }
         },
         ".properties.smtp_enable_starttls_auto": {
-          "value": true
+          "value": $smtp_enable_starttls_auto
         },
         ".properties.smtp_auth_mechanism": {
           "value": $smtp_auth_mechanism
@@ -423,6 +446,7 @@ cf_network=$(
 
 cf_resources=$(
   jq -n \
+    --arg iaas "$IAAS" \
     --argjson consul_server_instances $CONSUL_SERVER_INSTANCES \
     --argjson nats_instances $NATS_INSTANCES \
     --argjson nfs_server_instances $NFS_SERVER_INSTANCES \
@@ -443,6 +467,7 @@ cf_resources=$(
     --argjson tcp_router_instances $TCP_ROUTER_INSTANCES \
     --argjson syslog_adapter_instances $SYSLOG_ADAPTER_INSTANCES \
     --argjson doppler_instances $DOPPLER_INSTANCES \
+    --argjson internet_connected $INTERNET_CONNECTED \
     --arg ha_proxy_elb_name "$HA_PROXY_LB_NAME" \
     --arg ha_proxy_floating_ips "$HAPROXY_FLOATING_IPS" \
     --arg tcp_router_nsx_security_group "${TCP_ROUTER_NSX_SECURITY_GROUP}" \
@@ -460,7 +485,50 @@ cf_resources=$(
     --arg diego_brain_nsx_lb_pool_name "${DIEGO_BRAIN_NSX_LB_POOL_NAME}" \
     --arg diego_brain_nsx_lb_security_group "${DIEGO_BRAIN_NSX_LB_SECURITY_GROUP}" \
     --arg diego_brain_nsx_lb_port "${DIEGO_BRAIN_NSX_LB_PORT}" \
+    --arg mysql_nsx_security_group "${MYSQL_NSX_SECURITY_GROUP}" \
+    --arg mysql_nsx_lb_edge_name "${MYSQL_NSX_LB_EDGE_NAME}" \
+    --arg mysql_nsx_lb_pool_name "${MYSQL_NSX_LB_POOL_NAME}" \
+    --arg mysql_nsx_lb_security_group "${MYSQL_NSX_LB_SECURITY_GROUP}" \
+    --arg mysql_nsx_lb_port "${MYSQL_NSX_LB_PORT}" \
     '
+    if $iaas == "azure" then
+
+    {
+      "consul_server": { "instances": $consul_server_instances, "internet_connected": $internet_connected },
+      "nats": { "instances": $nats_instances, "internet_connected": $internet_connected },
+      "nfs_server": { "instances": $nfs_server_instances, "internet_connected": $internet_connected },
+      "mysql_proxy": { "instances": $mysql_proxy_instances, "internet_connected": $internet_connected },
+      "mysql": { "instances": $mysql_instances, "internet_connected": $internet_connected },
+      "backup-prepare": { "instances": $backup_prepare_instances, "internet_connected": $internet_connected },
+      "diego_database": { "instances": $diego_database_instances, "internet_connected": $internet_connected },
+      "uaa": { "instances": $uaa_instances, "internet_connected": $internet_connected },
+      "cloud_controller": { "instances": $cloud_controller_instances, "internet_connected": $internet_connected },
+      "ha_proxy": { "instances": $ha_proxy_instances, "internet_connected": $internet_connected },
+      "router": { "instances": $router_instances, "internet_connected": $internet_connected },
+      "mysql_monitor": { "instances": $mysql_monitor_instances, "internet_connected": $internet_connected },
+      "clock_global": { "instances": $clock_global_instances, "internet_connected": $internet_connected },
+      "cloud_controller_worker": { "instances": $cloud_controller_worker_instances, "internet_connected": $internet_connected },
+      "diego_brain": { "instances": $diego_brain_instances, "internet_connected": $internet_connected },
+      "diego_cell": { "instances": $diego_cell_instances, "internet_connected": $internet_connected },
+      "loggregator_trafficcontroller": { "instances": $loggregator_tc_instances, "internet_connected": $internet_connected },
+      "tcp_router": { "instances": $tcp_router_instances, "internet_connected": $internet_connected },
+      "syslog_adapter": { "instances": $syslog_adapter_instances, "internet_connected": $internet_connected },
+      "syslog_scheduler": {"internet_connected": $internet_connected},
+      "doppler": { "instances": $doppler_instances, "internet_connected": $internet_connected },
+      "smoke-tests": {"internet_connected": $internet_connected},
+      "push-apps-manager": {"internet_connected": $internet_connected},
+      "notifications": {"internet_connected": $internet_connected},
+      "notifications-ui": {"internet_connected": $internet_connected},
+      "push-pivotal-account": {"internet_connected": $internet_connected},
+      "autoscaling": {"internet_connected": $internet_connected},
+      "autoscaling-register-broker": {"internet_connected": $internet_connected},
+      "nfsbrokerpush": {"internet_connected": $internet_connected},
+      "bootstrap": {"internet_connected": $internet_connected},
+      "mysql-rejoin-unsafe": {"internet_connected": $internet_connected}
+    }
+
+    else
+
     {
       "consul_server": { "instances": $consul_server_instances },
       "nats": { "instances": $nats_instances },
@@ -483,6 +551,8 @@ cf_resources=$(
       "syslog_adapter": { "instances": $syslog_adapter_instances },
       "doppler": { "instances": $doppler_instances }
     }
+
+    end
 
     |
 
@@ -555,13 +625,35 @@ cf_resources=$(
     else
       .
     end
+
+    |
+
+    # MySQL
+
+    if $mysql_nsx_lb_edge_name != "" then
+      .mysql |= . + {
+        "nsx_security_groups": [$mysql_nsx_security_group],
+        "nsx_lbs": [
+          {
+            "edge_name": $mysql_nsx_lb_edge_name,
+            "pool_name": $mysql_nsx_lb_pool_name,
+            "security_group": $mysql_nsx_lb_security_group,
+            "port": $mysql_nsx_lb_port
+          }
+        ]
+      }
+    else
+      .
+    end
     '
 )
 
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-  --username $OPS_MGR_USR \
-  --password $OPS_MGR_PWD \
+  --client-id "${OPSMAN_CLIENT_ID}" \
+  --client-secret "${OPSMAN_CLIENT_SECRET}" \
+  --username "$OPS_MGR_USR" \
+  --password "$OPS_MGR_PWD" \
   --skip-ssl-validation \
   configure-product \
   --product-name cf \

@@ -4,7 +4,7 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: czero/cflinuxfs2
+    repository: czero/rootfs
 
 inputs:
 - name: pcf-pipelines
@@ -16,6 +16,8 @@ run:
 params:
   pcf_iaas:
   pcf_ert_domain:
+  OPSMAN_CLIENT_ID:
+  OPSMAN_CLIENT_SECRET:
   OPS_MGR_USR:
   OPS_MGR_PWD:
   pcf_az_1:
@@ -28,6 +30,8 @@ params:
   HAPROXY_BACKEND_CA:
   ROUTER_TLS_CIPHERS:
   HAPROXY_TLS_CIPHERS:
+  INTERNET_CONNECTED:
+  CONTAINER_NETWORKING_NW_CIDR:
   # IaaS Specific for GCP only
   gcp_storage_access_key:
   gcp_storage_secret_key:
@@ -83,3 +87,4 @@ params:
   db_silk_username:
   db_silk_password:
   routing_disable_http:
+  SECURITY_ACKNOWLEDGEMENT:

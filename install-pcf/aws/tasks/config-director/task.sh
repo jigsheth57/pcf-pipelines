@@ -45,7 +45,7 @@ read -r -d '' director_configuration <<EOF
     "bucket_name": "$s3_pcf_bosh",
     "access_key": "$aws_access_key_id",
     "secret_key": "$aws_secret_access_key",
-    "signature_version": "2",
+    "signature_version": "4",
     "region": "$AWS_REGION"
   }
 }
@@ -225,10 +225,12 @@ for json in "${jsons[@]}"; do
 done
 
 om-linux \
-  --target https://opsman.$ERT_DOMAIN \
+  --target https://${OPSMAN_DOMAIN_OR_IP_ADDRESS} \
   --skip-ssl-validation \
-  --username $OPSMAN_USER \
-  --password $OPSMAN_PASSWORD \
+  --client-id "${OPSMAN_CLIENT_ID}" \
+  --client-secret "${OPSMAN_CLIENT_SECRET}" \
+  --username "$OPSMAN_USER" \
+  --password "$OPSMAN_PASSWORD" \
   configure-bosh \
   --iaas-configuration "$iaas_configuration" \
   --director-configuration "$director_configuration" \

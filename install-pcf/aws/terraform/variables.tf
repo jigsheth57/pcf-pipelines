@@ -1,5 +1,5 @@
-variable "aws_access_key" {}
-variable "aws_secret_key" {}
+variable "aws_access_key_id" {}
+variable "aws_secret_access_key" {}
 variable "aws_key_name" {}
 variable "aws_cert_arn" {}
 variable "db_master_username" {}
@@ -8,9 +8,9 @@ variable "prefix" {}
 variable "opsman_ami" {}
 variable "amis_nat" {}
 variable "aws_region" {}
-variable "az1" {}
-variable "az2" {}
-variable "az3" {}
+variable "aws_az1" {}
+variable "aws_az2" {}
+variable "aws_az3" {}
 variable "route53_zone_id" {}
 
 /*

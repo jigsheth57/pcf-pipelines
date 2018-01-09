@@ -10,10 +10,14 @@ if [[ $opsman_available == "available" ]]; then
   om-linux \
     --target https://$OPSMAN_URI \
     --skip-ssl-validation \
-    --username $OPSMAN_USERNAME \
-    --password $OPSMAN_PASSWORD \
+    --client-id "${OPSMAN_CLIENT_ID}" \
+    --client-secret "${OPSMAN_CLIENT_SECRET}" \
+    --username "$OPSMAN_USERNAME" \
+    --password "$OPSMAN_PASSWORD" \
     delete-installation
 fi
+
+terraform init pcf-pipelines/install-pcf/openstack/terraform
 
 echo "Deleting provisioned infrastructure..."
 terraform destroy -force \

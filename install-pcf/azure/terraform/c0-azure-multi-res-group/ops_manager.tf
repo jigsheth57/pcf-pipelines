@@ -32,12 +32,12 @@ resource "azurerm_virtual_machine" "ops_manager_vm" {
     caching       = "ReadWrite"
     os_type       = "linux"
     create_option = "FromImage"
+    disk_size_gb  = "${var.om_disk_size_in_gb}"
   }
 
   os_profile {
     computer_name  = "${var.env_name}-ops-manager"
     admin_username = "${var.vm_admin_username}"
-    admin_password = "${var.vm_admin_password}"
   }
 
   os_profile_linux_config {

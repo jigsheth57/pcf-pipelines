@@ -5,17 +5,6 @@ export OPSMAN_DOMAIN_OR_IP_ADDRESS="opsman.$pcf_ert_domain"
 
 source pcf-pipelines/functions/generate_cert.sh
 
-if [[ ${pcf_ert_ssl_cert} == "" || ${pcf_ert_ssl_cert} == "generate" ]]; then
-  domains=(
-    "*.sys.${pcf_ert_domain}"
-    "*.cfapps.${pcf_ert_domain}"
-  )
-
-  certificates=$(generate_cert "${domains[*]}")
-  pcf_ert_ssl_cert=`echo $certificates | jq --raw-output '.certificate'`
-  pcf_ert_ssl_key=`echo $certificates | jq --raw-output '.key'`
-fi
-
 saml_domains=(
   "*.sys.${pcf_ert_domain}"
   "*.login.sys.${pcf_ert_domain}"
@@ -27,6 +16,17 @@ saml_cert_pem=`echo $saml_certificates | jq --raw-output '.certificate'`
 saml_key_pem=`echo $saml_certificates | jq --raw-output '.key'`
 
 if [[ "${pcf_iaas}" == "aws" ]]; then
+  if [[ ${pcf_ert_ssl_cert} == "" || ${pcf_ert_ssl_cert} == "generate" ]]; then
+    domains=(
+      "*.sys.${pcf_ert_domain}"
+      "*.cfapps.${pcf_ert_domain}"
+    )
+
+    certificates=$(generate_cert "${domains[*]}")
+    pcf_ert_ssl_cert=`echo $certificates | jq --raw-output '.certificate'`
+    pcf_ert_ssl_key=`echo $certificates | jq --raw-output '.key'`
+  fi
+
   cd terraform-state
     output_json=$(terraform output --json -state *.tfstate)
     db_host=$(echo $output_json | jq --raw-output '.db_host.value')
@@ -37,16 +37,14 @@ if [[ "${pcf_iaas}" == "aws" ]]; then
 elif [[ "${pcf_iaas}" == "gcp" ]]; then
   cd terraform-state
     db_host=$(terraform output --json -state *.tfstate | jq --raw-output '.sql_instance_ip.value')
+    pcf_ert_ssl_cert="$(terraform output ert_certificate)"
+    pcf_ert_ssl_key="$(terraform output ert_certificate_key)"
   cd -
 
   if [ -z "$db_host" ]; then
     echo Failed to get SQL instance IP from Terraform state file
     exit 1
   fi
-elif [[ "${pcf_iaas}" == "azure" ]]; then
-  cd terraform-state
-    db_host=$(terraform output --json -state *.tfstate | jq --raw-output '.mysql_dns.value')
-  cd -
 fi
 
 cf_network=$(
@@ -71,48 +69,49 @@ cf_resources=$(
   jq -n \
     --arg terraform_prefix $terraform_prefix \
     --arg iaas $pcf_iaas \
+    --argjson internet_connected $INTERNET_CONNECTED \
     '
     {
-      "consul_server": {"internet_connected": false},
-      "nats": {"internet_connected": false},
-      "nfs_server": {"internet_connected": false},
+      "consul_server": {"internet_connected": $internet_connected},
+      "nats": {"internet_connected": $internet_connected},
+      "nfs_server": {"internet_connected": $internet_connected},
       "mysql_proxy": {
         "instances": 0,
-        "internet_connected": false
+        "internet_connected": $internet_connected
       },
       "mysql": {
         "instances": 0,
-        "internet_connected": false
+        "internet_connected": $internet_connected
       },
-      "backup-prepare": {"internet_connected": false},
-      "diego_database": {"internet_connected": false},
-      "uaa": {"internet_connected": false},
-      "cloud_controller": {"internet_connected": false},
-      "ha_proxy": {"internet_connected": false},
-      "router": {"internet_connected": false},
+      "backup-prepare": {"internet_connected": $internet_connected},
+      "diego_database": {"internet_connected": $internet_connected},
+      "uaa": {"internet_connected": $internet_connected},
+      "cloud_controller": {"internet_connected": $internet_connected},
+      "ha_proxy": {"internet_connected": $internet_connected},
+      "router": {"internet_connected": $internet_connected},
       "mysql_monitor": {
         "instances": 0,
-        "internet_connected": false
+        "internet_connected": $internet_connected
       },
-      "clock_global": {"internet_connected": false},
-      "cloud_controller_worker": {"internet_connected": false},
-      "diego_brain": {"internet_connected": false},
-      "diego_cell": {"internet_connected": false},
-      "loggregator_trafficcontroller": {"internet_connected": false},
-      "syslog_adapter": {"internet_connected": false},
-      "syslog_scheduler": {"internet_connected": false},
-      "doppler": {"internet_connected": false},
-      "tcp_router": {"internet_connected": false},
-      "smoke-tests": {"internet_connected": false},
-      "push-apps-manager": {"internet_connected": false},
-      "notifications": {"internet_connected": false},
-      "notifications-ui": {"internet_connected": false},
-      "push-pivotal-account": {"internet_connected": false},
-      "autoscaling": {"internet_connected": false},
-      "autoscaling-register-broker": {"internet_connected": false},
-      "nfsbrokerpush": {"internet_connected": false},
-      "bootstrap": {"internet_connected": false},
-      "mysql-rejoin-unsafe": {"internet_connected": false}
+      "clock_global": {"internet_connected": $internet_connected},
+      "cloud_controller_worker": {"internet_connected": $internet_connected},
+      "diego_brain": {"internet_connected": $internet_connected},
+      "diego_cell": {"internet_connected": $internet_connected},
+      "loggregator_trafficcontroller": {"internet_connected": $internet_connected},
+      "syslog_adapter": {"internet_connected": $internet_connected},
+      "syslog_scheduler": {"internet_connected": $internet_connected},
+      "doppler": {"internet_connected": $internet_connected},
+      "tcp_router": {"internet_connected": $internet_connected},
+      "smoke-tests": {"internet_connected": $internet_connected},
+      "push-apps-manager": {"internet_connected": $internet_connected},
+      "notifications": {"internet_connected": $internet_connected},
+      "notifications-ui": {"internet_connected": $internet_connected},
+      "push-pivotal-account": {"internet_connected": $internet_connected},
+      "autoscaling": {"internet_connected": $internet_connected},
+      "autoscaling-register-broker": {"internet_connected": $internet_connected},
+      "nfsbrokerpush": {"internet_connected": $internet_connected},
+      "bootstrap": {"internet_connected": $internet_connected},
+      "mysql-rejoin-unsafe": {"internet_connected": $internet_connected}
     }
 
     |
@@ -145,6 +144,7 @@ cf_properties=$(
     --arg router_tls_ciphers "$ROUTER_TLS_CIPHERS" \
     --arg haproxy_tls_ciphers "$HAPROXY_TLS_CIPHERS" \
     --arg routing_disable_http "$routing_disable_http" \
+    --arg security_acknowledgement "$SECURITY_ACKNOWLEDGEMENT" \
     --arg iaas $pcf_iaas \
     --arg pcf_ert_domain "$pcf_ert_domain" \
     --arg mysql_monitor_recipient_email "$mysql_monitor_recipient_email" \
@@ -192,6 +192,7 @@ cf_properties=$(
     --arg mysql_backups_s3_access_key_id "$MYSQL_BACKUPS_S3_ACCESS_KEY_ID" \
     --arg mysql_backups_s3_secret_access_key "$MYSQL_BACKUPS_S3_SECRET_ACCESS_KEY" \
     --arg mysql_backups_s3_cron_schedule "$MYSQL_BACKUPS_S3_CRON_SCHEDULE" \
+    --arg container_networking_nw_cidr "$CONTAINER_NETWORKING_NW_CIDR" \
     '
     {
       ".uaa.service_provider_key_credentials": {
@@ -203,8 +204,9 @@ cf_properties=$(
       ".properties.tcp_routing": { "value": "disable" },
       ".properties.route_services": { "value": "enable" },
       ".ha_proxy.skip_cert_verify": { "value": true },
+      ".properties.container_networking_network_cidr": { "value": $container_networking_nw_cidr },
       ".properties.route_services.enable.ignore_ssl_cert_verification": { "value": true },
-      ".properties.security_acknowledgement": { "value": "X" },
+      ".properties.security_acknowledgement": { "value": $security_acknowledgement },
       ".properties.system_database": { "value": "external" },
       ".properties.system_database.external.port": { "value": "3306" },
       ".properties.system_database.external.host": { "value": $db_host },
@@ -268,7 +270,7 @@ cf_properties=$(
         ".properties.system_blobstore.external.resources_bucket": { "value": "\($terraform_prefix)-resources" },
         ".properties.system_blobstore.external.access_key": { "value": $aws_access_key },
         ".properties.system_blobstore.external.secret_key": { "value": { "secret": $aws_secret_key } },
-        ".properties.system_blobstore.external.signature_version.value": { "value": "2" },
+        ".properties.system_blobstore.external.signature_version.value": { "value": "4" },
         ".properties.system_blobstore.external.region": { "value": $aws_region },
         ".properties.system_blobstore.external.endpoint": { "value": $s3_endpoint }
       }
@@ -372,8 +374,10 @@ cf_properties=$(
 
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
-  --username $OPS_MGR_USR \
-  --password $OPS_MGR_PWD \
+  --client-id "${OPSMAN_CLIENT_ID}" \
+  --client-secret "${OPSMAN_CLIENT_SECRET}" \
+  --username "$OPS_MGR_USR" \
+  --password "$OPS_MGR_PWD" \
   --skip-ssl-validation \
   configure-product \
   --product-name cf \

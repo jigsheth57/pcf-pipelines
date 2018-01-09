@@ -4,7 +4,7 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: czero/cflinuxfs2
+    repository: czero/rootfs
 
 inputs:
   - name: pcf-pipelines
@@ -21,10 +21,12 @@ params:
   AZURE_PCF_TERRAFORM_TEMPLATE:
   AZURE_SUBSCRIPTION_ID:
   AZURE_TENANT_ID:
-  AZURE_SERVICE_PRINCIPAL_ID:
-  AZURE_SERVICE_PRINCIPAL_PASSWORD:
+  AZURE_CLIENT_ID:
+  AZURE_CLIENT_SECRET:
   AZURE_REGION:
   AZURE_TERRAFORM_PREFIX:
   OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  OPSMAN_CLIENT_ID:
+  OPSMAN_CLIENT_SECRET:
   OPSMAN_USERNAME:
   OPSMAN_PASSWORD:
