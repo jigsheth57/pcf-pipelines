@@ -101,6 +101,8 @@ jobs:
       aws_az1: {{aws_az1}}
       aws_az2: {{aws_az2}}
       aws_az3: {{aws_az3}}
+      system_domain: {{system_domain}}
+      apps_domain: {{apps_domain}}
       route53_zone_id: {{ROUTE_53_ZONE_ID}}
       vpc_cidr: {{vpc_cidr}}
       public_subnet_cidr_az1: {{public_subnet_cidr_az1}}
@@ -179,8 +181,6 @@ jobs:
     file: pcf-pipelines/install-pcf/aws/tasks/config-director/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
-      OPSMAN_CLIENT_ID: {{opsman_client_id}}
-      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPSMAN_USER: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
       AWS_KEY_NAME: {{aws_key_name}}
@@ -211,8 +211,8 @@ jobs:
     file: pcf-pipelines/tasks/apply-changes/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
-      OPSMAN_CLIENT_ID: {{opsman_client_id}}
-      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
 
@@ -233,8 +233,8 @@ jobs:
     file: pcf-pipelines/tasks/upload-product-and-stemcell/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
-      OPSMAN_CLIENT_ID: {{opsman_client_id}}
-      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
       OPS_MGR_USR: {{opsman_admin_username}}
       OPS_MGR_PWD: {{opsman_admin_password}}
       PIVNET_API_TOKEN: {{pivnet_token}}
@@ -245,8 +245,8 @@ jobs:
     file: pcf-pipelines/tasks/stage-product/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
-      OPSMAN_CLIENT_ID: {{opsman_client_id}}
-      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
 
@@ -263,13 +263,11 @@ jobs:
     file: pcf-pipelines/tasks/configure-ert/task.yml
     params:
       pcf_iaas: aws
-      pcf_ert_domain: {{ERT_DOMAIN}}
-      OPSMAN_CLIENT_ID: {{opsman_client_id}}
-      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
+      PCF_ERT_DOMAIN: {{pcf_ert_domain}}
+      SYSTEM_DOMAIN: {{system_domain}}
+      APPS_DOMAIN: {{apps_domain}}
       OPS_MGR_USR: {{opsman_admin_username}}
       OPS_MGR_PWD: {{opsman_admin_password}}
-      pcf_ert_ssl_cert: {{ERT_SSL_CERT}}
-      pcf_ert_ssl_key: {{ERT_SSL_KEY}}
       pcf_az_1: {{aws_az1}}
       pcf_az_2: {{aws_az2}}
       pcf_az_3: {{aws_az3}}
@@ -294,8 +292,12 @@ jobs:
       ROUTER_TLS_CIPHERS: {{router_tls_ciphers}}
       HAPROXY_TLS_CIPHERS: {{haproxy_tls_ciphers}}
       routing_disable_http: {{routing_disable_http}}
+      ROUTING_CUSTOM_CA_CERTIFICATES: {{routing_custom_ca_certificates}}
+      ROUTING_TLS_TERMINATION: {{routing_tls_termination}}
       INTERNET_CONNECTED: {{internet_connected}}
       CONTAINER_NETWORKING_NW_CIDR: {{container_networking_nw_cidr}}
+      CREDHUB_ENCRYPTION_KEYS: {{credhub_encryption_keys}}
+      NETWORKING_POE_SSL_CERTS: {{networking_poe_ssl_certs}}
       # IaaS Specific for GCP only
       gcp_storage_access_key:
       gcp_storage_secret_key:
@@ -335,14 +337,16 @@ jobs:
       azure_droplets_container:
       azure_packages_container:
       azure_resources_container:
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
 
   - task: disable-errands
     file: pcf-pipelines/tasks/disable-errands/task.yml
     params:
       PRODUCT_NAME: cf
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
-      OPSMAN_CLIENT_ID: {{opsman_client_id}}
-      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
       ERRANDS_TO_DISABLE: {{ert_errands_to_disable}}
@@ -351,8 +355,8 @@ jobs:
     file: pcf-pipelines/tasks/apply-changes/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
-      OPSMAN_CLIENT_ID: {{opsman_client_id}}
-      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
 
@@ -370,8 +374,6 @@ jobs:
     file: pcf-pipelines/install-pcf/aws/tasks/wipe-env/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
-      OPSMAN_CLIENT_ID: {{opsman_client_id}}
-      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
       AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
