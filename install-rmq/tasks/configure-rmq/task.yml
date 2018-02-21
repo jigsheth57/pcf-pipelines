@@ -1,0 +1,24 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: czero/rootfs
+
+inputs:
+- name: pcf-pipelines
+
+run:
+  path: pcf-pipelines/install-rmq/tasks/configure-ert/task.sh
+
+params:
+  pcf_az_1:
+  pcf_az_2:
+  pcf_az_3:
+  OPSMAN_DOMAIN_OR_IP_ADDRESS:
+  OPS_MGR_USR:
+  OPS_MGR_PWD:
+  INTERNET_CONNECTED:
+  SERVER_ADMIN_USERNAME:
+  SERVER_ADMIN_PASSWORD:
