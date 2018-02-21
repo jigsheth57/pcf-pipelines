@@ -7,16 +7,16 @@ rmq_network=$(
     --arg other_availability_zones "$pcf_az_1,$pcf_az_2,$pcf_az_3" \
     '
     {
-      "service_network": {
-        "name": "dynamic_services",
-      },
-      "network": {
-        "name": "services",
-      },
-      "other_availability_zones": ($other_availability_zones | split(",") | map({name: .})),
       "singleton_availability_zone": {
-        "name": $singleton_availability_zone
-      }
+    		"name": $singleton_availability_zone
+    	},
+    	"other_availability_zones": ($other_availability_zones | split(",") | map({name: .})),
+    	"network": {
+    		"name": "services"
+    	},
+    	"service_network": {
+    		"name": "dynamic-services"
+    	}
     }
     '
 )
@@ -36,7 +36,7 @@ rmq_resources=$(
       "register-on-demand-service-broker": {"internet_connected": $internet_connected},
       "deregister-on-demand-service-broker": {"internet_connected": $internet_connected},
       "delete-all-service-instances": {"internet_connected": $internet_connected},
-      "upgrade-all-service-instances": {"internet_connected": $internet_connected},
+      "upgrade-all-service-instances": {"internet_connected": $internet_connected}
     }'
 )
 
@@ -64,7 +64,7 @@ rmq_properties=$(
       ".properties.syslog_selector": { "value": "disabled" },
       ".properties.on_demand_broker_plan_1_cf_service_access": { "value": "enable" },
       ".properties.on_demand_broker_plan_1_rabbitmq_az_placement": {
-        "value": [($other_availability_zones | split(",") | map(.))]
+        "value": ($other_availability_zones | split(",") | map(.))
       },
       ".properties.on_demand_broker_plan_1_disk_limit_acknowledgement": { "value": ["acknowledge"] }
     }
