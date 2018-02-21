@@ -10,7 +10,7 @@ inputs:
 - name: pcf-pipelines
 
 run:
-  path: pcf-pipelines/install-rmq/tasks/configure-ert/task.sh
+  path: pcf-pipelines/install-rmq/tasks/configure-rmq/task.sh
 
 params:
   pcf_az_1:

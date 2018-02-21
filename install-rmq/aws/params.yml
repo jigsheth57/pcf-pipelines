@@ -18,8 +18,12 @@ aws_az3: us-east-1d
 #     nfsbrokerpush
 rmq_errands_to_disable: none
 
-# PCF Elastic Runtime minor version to track
-rmq_major_minor_version: 1\.11+\.[0-9]+$
+# PCF RabbitMQ minor version to track
+rmq_major_minor_version: ^1\.11\..*$
+
+# RabbitMQ Server Admin Credentials
+rmq_server_admin_username: CHANGEME
+rmq_server_admin_password: CHANGEME
 
 # Whether or not the ERT VMs are internet connected.
 internet_connected: false
