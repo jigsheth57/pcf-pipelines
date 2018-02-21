@@ -66,7 +66,7 @@ rmq_properties=$(
       ".properties.on_demand_broker_plan_1_rabbitmq_az_placement": {
         "value": [($other_availability_zones | split(",") | map(.))]
         }
-      }
+      },
       ".properties.on_demand_broker_plan_1_disk_limit_acknowledgement": { "value": ["acknowledge"] }
     }
     '
