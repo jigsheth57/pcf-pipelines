@@ -60,9 +60,6 @@ redis_errands_to_disable: none
 # PCF Redis minor version to track
 redis_major_minor_version: ^1\.11\..*$
 
-# PCF Redis tile installation (Valid values: default or minimum)
-redis_tile: minimum
-
 # Whether or not the RabbitMQ VMs are internet connected.
 internet_connected: false
 

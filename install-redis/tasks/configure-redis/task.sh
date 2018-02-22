@@ -23,7 +23,6 @@ redis_network=$(
 
 redis_resources=$(
   jq -n \
-    --arg redis_tile "$TILE_INSTALL" \
     --argjson internet_connected $INTERNET_CONNECTED \
     '{
       "redis-on-demand-broker": {"internet_connected": $internet_connected},
@@ -32,10 +31,7 @@ redis_resources=$(
       "delete-all-service-instances-and-deregister-broker": {"internet_connected": $internet_connected},
       "on-demand-broker-smoke-tests": {"internet_connected": $internet_connected},
       "cf-redis-broker": {"internet_connected": $internet_connected},
-      "dedicated-node": {
-        "instances": (if $redis_tile == "minimum" then 1 else "" end),
-        "internet_connected": $internet_connected
-      },
+      "dedicated-node": {"internet_connected": $internet_connected},
       "broker-registrar": {"internet_connected": $internet_connected},
       "broker-deregistrar": {"internet_connected": $internet_connected},
       "smoke-tests": {"internet_connected": $internet_connected}
