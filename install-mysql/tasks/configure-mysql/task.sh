@@ -69,7 +69,7 @@ om-linux \
   --password "$OPS_MGR_PWD" \
   --skip-ssl-validation \
   configure-product \
-  --product-name p-rabbitmq \
+  --product-name pivotal-mysql \
   --product-properties "$mysql_properties" \
   --product-network "$mysql_network" \
   --product-resources "$mysql_resources"
