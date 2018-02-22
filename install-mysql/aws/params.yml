@@ -1,0 +1,46 @@
+aws_az1: us-east-1a
+aws_az2: us-east-1b
+aws_az3: us-east-1d
+
+# This key must be a key with admin access
+aws_access_key_id: CHANGEME
+aws_secret_access_key: CHANGEME
+
+# PCF MySQL Backup Plan
+aws_s3_backup_bucket: CHANGEME
+aws_s3_backup_region: us-east-1
+aws_s3_backup_bucket_path: CHANGEME
+aws_s3_backup_bucket_schedule: 0 */8 * * *
+
+# Errands to disable prior to deploying ERT
+# Valid values:
+#   all
+#   none
+#   "" (empty string - equivalent to none)
+#   Any combination of the following, separated by comma:
+#     smoke-tests
+#     push-apps-manager
+#     notifications
+#     notifications-ui
+#     push-pivotal-account
+#     autoscaling
+#     autoscaling-register-broker
+#     nfsbrokerpush
+mysql_errands_to_disable: none
+
+# PCF MySQL v2 minor version to track
+rmq_major_minor_version: ^2\.2\..*$
+
+# Whether or not the MySQL VMs are internet connected.
+internet_connected: false
+
+# Operations Manager credentials
+# opsman_admin_username/opsman_admin_password needs to be specified
+opsman_admin_password: CHANGEME
+opsman_admin_username: CHANGEME
+
+# The domain to access Operations Manager; opsman.<ert-domain>
+opsman_domain_or_ip_address: CHANGEME
+
+# Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
+pivnet_token: CHANGEME
