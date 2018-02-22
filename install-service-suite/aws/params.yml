@@ -32,7 +32,7 @@ mysql_errands_to_disable: none
 #     broker-registrar
 #     on-demand-broker-smoke-tests
 #     register-on-demand-service-broker
-#     smoke-tests
+#     multitenant-smoke-tests
 #     upgrade-all-service-instances
 
 rmq_errands_to_disable: none

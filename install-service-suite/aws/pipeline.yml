@@ -143,7 +143,7 @@ jobs:
       OPSMAN_PASSWORD: {{opsman_admin_password}}
 
 - name: configure-rmq
-  serial_groups: [opsman]
+  serial_groups: [opsman1]
   serial: true
   plan:
   - aggregate:
@@ -176,7 +176,7 @@ jobs:
       ERRANDS_TO_DISABLE: {{rmq_errands_to_disable}}
 
 - name: configure-mysql
-  serial_groups: [opsman]
+  serial_groups: [opsman1]
   serial: true
   plan:
   - aggregate:
@@ -213,7 +213,7 @@ jobs:
       ERRANDS_TO_DISABLE: {{mysql_errands_to_disable}}
 
 - name: configure-redis
-  serial_groups: [opsman]
+  serial_groups: [opsman1]
   serial: true
   plan:
   - aggregate:
