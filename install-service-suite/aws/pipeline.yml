@@ -22,6 +22,14 @@ resources:
     product_version: {{mysql_major_minor_version}}
     sort_by: semver
 
+- name: pivnet-redis
+  type: pivnet
+  source:
+    api_token: {{pivnet_token}}
+    product_slug: p-redis
+    product_version: {{redis_major_minor_version}}
+    sort_by: semver
+
 - name: pcf-pipelines
   type: git
   source:
@@ -37,12 +45,12 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: pcf-pipelines
     - get: pivnet-product
       resource: pivnet-rabbitmq
       params:
         globs:
         - "p-rabbitmq*.pivotal"
+    - get: pcf-pipelines
       trigger: true
       passed: [install-service-suite]
   - task: upload-tile
@@ -71,12 +79,46 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: pcf-pipelines
     - get: pivnet-product
       resource: pivnet-mysql
       params:
         globs:
         - "pivotal-mysql*.pivotal"
+    - get: pcf-pipelines
+      trigger: true
+      passed: [install-service-suite]
+  - task: upload-tile
+    file: pcf-pipelines/tasks/upload-product-and-stemcell/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
+      OPS_MGR_USR: {{opsman_admin_username}}
+      OPS_MGR_PWD: {{opsman_admin_password}}
+      PIVNET_API_TOKEN: {{pivnet_token}}
+      IAAS: "aws"
+      NO_PROXY: ""
+      OM_IP: ""
+  - task: stage-tile
+    file: pcf-pipelines/tasks/stage-product/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
+
+- name: upload-redis
+  serial_groups: [opsman]
+  serial: true
+  plan:
+  - aggregate:
+    - get: pivnet-product
+      resource: pivnet-redis
+      params:
+        globs:
+        - "p-redis*.pivotal"
+    - get: pcf-pipelines
       trigger: true
       passed: [install-service-suite]
   - task: upload-tile
@@ -170,6 +212,37 @@ jobs:
       OPSMAN_PASSWORD: {{opsman_admin_password}}
       ERRANDS_TO_DISABLE: {{mysql_errands_to_disable}}
 
+- name: configure-redis
+  serial_groups: [opsman]
+  serial: true
+  plan:
+  - aggregate:
+    - get: pcf-pipelines
+      trigger: true
+      passed: [upload-redis]
+
+  - task: configure-redis
+    file: pcf-pipelines/install-redis/tasks/configure-redis/task.yml
+    params:
+      pcf_az_1: {{aws_az1}}
+      pcf_az_2: {{aws_az2}}
+      pcf_az_3: {{aws_az3}}
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPS_MGR_USR: {{opsman_admin_username}}
+      OPS_MGR_PWD: {{opsman_admin_password}}
+      INTERNET_CONNECTED: {{internet_connected}}
+
+  - task: disable-errands
+    file: pcf-pipelines/tasks/disable-errands/task.yml
+    params:
+      PRODUCT_NAME: p-redis
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
+      ERRANDS_TO_DISABLE: {{redis_errands_to_disable}}
+
 - name: deploy-service-suite
   serial_groups: [opsman]
   serial: true
@@ -177,7 +250,7 @@ jobs:
   - aggregate:
     - get: pcf-pipelines
       trigger: true
-      passed: [configure-rmq,configure-mysql]
+      passed: [configure-rmq,configure-mysql,configure-redis]
 
   - task: deploy-service-suite
     file: pcf-pipelines/tasks/apply-changes/task.yml
