@@ -8,11 +8,9 @@ aws_az3: us-east-1d
 #   none
 #   "" (empty string - equivalent to none)
 #   Any combination of the following, separated by comma:
-#     broker-registrar
-#     smoke-tests
-#     register-broker
-#     on-demand-broker-smoke-tests
-#     upgrade-all-service-instances
+#     deploy-service-broker
+#     register-service-broker
+#     run-smoke-tests
 scs_errands_to_disable: none
 
 # PCF SCS minor version to track

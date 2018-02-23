@@ -26,7 +26,7 @@ jobs:
   - aggregate:
     - get: pcf-pipelines
     - get: pivnet-product
-      resource: pivnet-redis
+      resource: pivnet-scs
       params:
         globs:
         - "p-spring-cloud-services*.pivotal"
@@ -44,6 +44,46 @@ jobs:
       OM_IP: ""
   - task: stage-tile
     file: pcf-pipelines/tasks/stage-product/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
+
+- name: deploy-scs
+  serial_groups: [opsman]
+  plan:
+  - aggregate:
+    - get: pcf-pipelines
+      trigger: true
+      passed: [upload-scs]
+
+  - task: configure-scs
+    file: pcf-pipelines/install-scs/tasks/configure-scs/task.yml
+    params:
+      pcf_iaas: "aws"
+      pcf_az_1: {{aws_az1}}
+      pcf_az_2: {{aws_az2}}
+      pcf_az_3: {{aws_az3}}
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPS_MGR_USR: {{opsman_admin_username}}
+      OPS_MGR_PWD: {{opsman_admin_password}}
+      INTERNET_CONNECTED: {{internet_connected}}
+
+  - task: disable-errands
+    file: pcf-pipelines/tasks/disable-errands/task.yml
+    params:
+      PRODUCT_NAME: p-spring-cloud-services
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
+      ERRANDS_TO_DISABLE: {{scs_errands_to_disable}}
+
+  - task: deploy-scs
+    file: pcf-pipelines/tasks/apply-changes/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
       OPSMAN_CLIENT_ID: ""
