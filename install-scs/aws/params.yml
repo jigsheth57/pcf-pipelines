@@ -1,0 +1,33 @@
+aws_az1: us-east-1a
+aws_az2: us-east-1b
+aws_az3: us-east-1d
+
+# Errands to disable prior to deploying Spring Cloud Services
+# Valid values:
+#   all
+#   none
+#   "" (empty string - equivalent to none)
+#   Any combination of the following, separated by comma:
+#     broker-registrar
+#     smoke-tests
+#     register-broker
+#     on-demand-broker-smoke-tests
+#     upgrade-all-service-instances
+scs_errands_to_disable: none
+
+# PCF SCS minor version to track
+scs_major_minor_version: ^1\.5\..*$
+
+# Whether or not the Spring Cloud Services VMs are internet connected.
+internet_connected: false
+
+# Operations Manager credentials
+# opsman_admin_username/opsman_admin_password needs to be specified
+opsman_admin_password: CHANGEME
+opsman_admin_username: CHANGEME
+
+# The domain to access Operations Manager; opsman.<ert-domain>
+opsman_domain_or_ip_address: CHANGEME
+
+# Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
+pivnet_token: CHANGEME
