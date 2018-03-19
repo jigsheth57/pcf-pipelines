@@ -1,0 +1,32 @@
+# GCP Zones
+gcp_zone_1: us-central1-a
+gcp_zone_2: us-central1-b
+gcp_zone_3: us-central1-c
+
+# Errands to disable prior to deploying MySQL
+# Valid values:
+#   all
+#   none
+#   "" (empty string - equivalent to none)
+#   Any combination of the following, separated by comma:
+#     register-broker
+#     smoke-tests
+#     upgrade-all-service-instances
+mysql_errands_to_disable: none
+
+# PCF MySQL v2 minor version to track
+rmq_major_minor_version: ^1\.10\..*$
+
+# Whether or not the MySQL VMs are internet connected.
+internet_connected: false
+
+# Operations Manager credentials
+# opsman_admin_username/opsman_admin_password needs to be specified
+opsman_admin_password: CHANGEME
+opsman_admin_username: CHANGEME
+
+# The domain to access Operations Manager; opsman.<ert-domain>
+opsman_domain_or_ip_address: CHANGEME
+
+# Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
+pivnet_token: CHANGEME

@@ -12,10 +12,10 @@ rmq_network=$(
     	},
     	"other_availability_zones": ($other_availability_zones | split(",") | map({name: .})),
     	"network": {
-    		"name": "services"
+    		"name": "ert"
     	},
     	"service_network": {
-    		"name": "dynamic-services"
+    		"name": "services-1"
     	}
     }
     '
