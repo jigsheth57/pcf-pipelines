@@ -1,4 +1,6 @@
 # AMI to use for nat box
+# Update with the correct NAT AMI for your region. List of AMIs can be found
+# here: https://github.com/pivotal-cf/terraforming-aws/blob/master/nat.tf
 amis_nat: ami-303b1458
 
 # This key must be a key with admin access
@@ -27,16 +29,16 @@ haproxy_tls_ciphers: "DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-
 # C2C Networking network CIDR
 container_networking_nw_cidr: 10.255.0.0/16
 
-# For credhub integration, replace dummy values in the following structure
-# and set the number of credhub instances in resource config to 2
-credhub_encryption_keys: |
-  - name: dummy encryption key 1
-    key:
-      secret: CHANGEME_CHANGEME_CHANGEME_CHANGEME
-    primary: true
-  - name: encryption key 2
-    key:
-      secret: CHANGEME_CHANGEME_CHANGEME_CHANGEME
+# For credhub integration, Set the number of credhub instances in resource config to 2
+# Primary Encryption Name MUST match one of the encryption key names provided
+# Encryption keys 2 and 3 are optional
+credhub_primary_encryption_name: dummy encryption key 1
+credhub_encryption_key_name1: dummy encryption key 1
+credhub_encryption_key_secret1: CHANGEME_CHANGEME_CHANGEME_CHANGEME
+credhub_encryption_key_name2: # Optional Name 2
+credhub_encryption_key_secret2: # Optional Secret 2
+credhub_encryption_key_name3: # Optional Name 3
+credhub_encryption_key_secret3: # Optional Secret 2
 
 # ERT Database Credentials - Required
 db_accountdb_password: CHANGEME
@@ -72,7 +74,7 @@ db_master_username: CHANGEME
 director_certificates:
 
 # Domain Names for ERT
-pcf_ert_domain: CHANGEME # This is the domain you will access ERT with
+pcf_ert_domain: CHANGEME # This is the domain you will access ERT with, for example: pcf.example.com.
 system_domain: CHANGEME # e.g. system.pcf.example.com
 apps_domain: CHANGEME   # e.g. apps.pcf.example.com
 
@@ -82,18 +84,19 @@ apps_domain: CHANGEME   # e.g. apps.pcf.example.com
 #   none
 #   "" (empty string - equivalent to none)
 #   Any combination of the following, separated by comma:
-#     smoke-tests
+#     smoke_tests
+#     push-usage-service
 #     push-apps-manager
-#     notifications
-#     notifications-ui
+#     deploy-notifications
+#     deploy-notifications-ui
 #     push-pivotal-account
-#     autoscaling
-#     autoscaling-register-broker
+#     deploy-autoscaling
+#     register-broker
 #     nfsbrokerpush
 ert_errands_to_disable: none
 
 # PCF Elastic Runtime minor version to track
-ert_major_minor_version: 2\.[0-9\]+\.[0-9]+$ 
+ert_major_minor_version: 2\.[0-9\]+\.[0-9]+$
 
 # Optional - if your git repo requires an SSH key.
 git_private_key:
@@ -126,31 +129,6 @@ mysql_backups_s3_cron_schedule:
 mysql_backups_s3_endpoint_url:
 mysql_backups_s3_secret_access_key:
 
-# Optional. If using own certs, follow this format (if
-# blank the cert will be auto generated):
-networking_poe_ssl_certs:
-#networking_poe_ssl_certs: |
-#  - name: Point of Entry Certificate 1
-#    certificate:
-#      cert_pem: |
-#        -----BEGIN EXAMPLE CERTIFICATE-----
-#        ...
-#        -----END EXAMPLE CERTIFICATE-----
-#      private_key_pem: |
-#        -----BEGIN EXAMPLE CERTIFICATE-----
-#        ...
-#        -----END EXAMPLE CERTIFICATE-----
-#  - name: Certificate 2
-#    certificate:
-#      cert_pem: |
-#        -----BEGIN EXAMPLE CERTIFICATE-----
-#        ...
-#        -----END EXAMPLE CERTIFICATE-----
-#      private_key_pem: |
-#        -----BEGIN EXAMPLE RSA PRIVATE KEY-----
-#        ...
-#        -----END EXAMPLE RSA PRIVATE KEY-----
-
 # Operations Manager credentials
 # opsman_admin_username/opsman_admin_password needs to be specified
 opsman_admin_password: CHANGEME
@@ -162,8 +140,8 @@ opsman_allow_https_cidr_ranges:
 # CIDRs to allow SSH access to Operations Manager from; configure PEM as well with the private key
 opsman_allow_ssh_cidr_ranges:
 
-# The domain to access Operations Manager; opsman.<ert-domain>
-opsman_domain_or_ip_address: CHANGEME
+# The domain to access Operations Manager;
+opsman_domain_or_ip_address: CHANGEME #This must be your pcf_ert_domain with "opsman." as a prefix. For example, opsman.pcf.example.com
 
 # PCF Ops Manager minor version to track
 opsman_major_minor_version: 2\.[0-9\]+\.[0-9]+$
@@ -174,6 +152,11 @@ PEM: CHANGEME
 # Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
 pivnet_token: CHANGEME
 
+# Optional. If blank the cert(s) will be generated:
+poe_ssl_name1:
+poe_ssl_cert1:
+poe_ssl_key1:
+
 # Route53 zone to add records to
 ROUTE_53_ZONE_ID:
 
@@ -181,7 +164,7 @@ ROUTE_53_ZONE_ID:
 # All CA certificates should be appended together into a single collection of PEM-encoded entries.
 routing_custom_ca_certificates:
 
-# Disable HTTP on gorouters (true|false)
+# Disable HTTP on gorouters - do not set this param to anything other than `false`; ssl is terminated at the load balancer
 routing_disable_http: false
 
 # Support for the X-Forwarded-Client-Cert header. Possible values: (load_balancer|ha_proxy|router)

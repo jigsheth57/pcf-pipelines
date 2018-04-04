@@ -50,16 +50,17 @@ company_proxy_domain:
 # c2c networking network cidr
 container_networking_nw_cidr: 10.255.0.0/16
 
-# For credhub integration, replace dummy values in the following structure
-# and set the number of credhub instances in resource config to 2
-credhub_encryption_keys: |
-  - name: dummy encryption key 1
-    key:
-      secret: CHANGEME_CHANGEME_CHANGEME_CHANGEME
-    primary: true
-  - name: encryption key 2
-    key:
-      secret: CHANGEME_CHANGEME_CHANGEME_CHANGEME
+# For credhub integration, Set the number of credhub instances in resource config to 2
+# Primary Encryption Name MUST match one of the encryption key names provided
+# Encryption keys 2 and 3 are optional
+# Note: The secret key needs to be 20 characters or more.
+credhub_primary_encryption_name: dummy encryption key 1
+credhub_encryption_key_name1: dummy encryption key 1
+credhub_encryption_key_secret1: CHANGEME_CHANGEME_CHANGEME_CHANGEME
+credhub_encryption_key_name2: # Optional Name 2
+credhub_encryption_key_secret2: # Optional Secret 2
+credhub_encryption_key_name3: # Optional Name 3
+credhub_encryption_key_secret3: # Optional Secret 2
 
 default_quota_max_number_services: 1000
 default_quota_memory_limit_mb: 10240
@@ -101,15 +102,16 @@ enable_vm_resurrector: true
 #   none
 #   "" (empty string - equivalent to none)
 #   Any combination of the following, separated by comma:
-#     smoke-tests
+#     smoke_tests
+#     push-usage-service
 #     push-apps-manager
-#     notifications
-#     notifications-ui
+#     deploy-notifications
+#     deploy-notifications-ui
 #     push-pivotal-account
-#     autoscaling
-#     autoscaling-register-broker
+#     deploy-autoscaling
+#     register-broker
 #     nfsbrokerpush
-ert_errands_to_disable:       # Comma-separated list of errand names to disable before deploy
+ert_errands_to_disable: none
 
 # PCF Elastic Runtime minor version to track
 ert_major_minor_version: 2\.[0-9\]+\.[0-9]+$
@@ -119,9 +121,6 @@ ert_singleton_job_az: CHANGEME
 
 # Applications Network Maximum Transmission Unit bytes
 garden_network_mtu: 1454
-
-# Only change this if you need to avoid address collision with a third-party service on the same subnet.
-garden_network_pool_cidr: 10.254.0.0/22
 
 # Optional - if your git repo requires an SSH key.
 git_private_key:
@@ -212,29 +211,6 @@ mysql_backups_scp_port:
 mysql_backups_scp_server:
 mysql_backups_scp_user:
 
-networking_poe_ssl_certs:
-#networking_poe_ssl_certs: |
-#  - name: Point of Entry Certificate 1
-#    certificate:
-#      cert_pem: |
-#        -----BEGIN EXAMPLE CERTIFICATE-----
-#        ...
-#        -----END EXAMPLE CERTIFICATE-----
-#      private_key_pem: |
-#        -----BEGIN EXAMPLE CERTIFICATE-----
-#        ...
-#        -----END EXAMPLE CERTIFICATE-----
-#  - name: PoE certificate 2
-#    certificate:
-#      cert_pem: |
-#        -----BEGIN EXAMPLE CERTIFICATE-----
-#        ...
-#        -----END EXAMPLE CERTIFICATE-----
-#      private_key_pem: |
-#        -----BEGIN EXAMPLE RSA PRIVATE KEY-----
-#        ...
-#        -----END EXAMPLE RSA PRIVATE KEY-----
-
 #nsx configuration
 nsx_address:                      # address of nsx
 nsx_ca_certificate:               # cert for nsx
@@ -271,7 +247,7 @@ ntp_servers: CHANGEME
 # Decryption password for Ops Manager exported settings
 om_decryption_pwd: CHANGEME
 
-# Decryption password for Ops Manager exported settings
+# Comma separated list of DNS servers used by Ops Manager
 om_dns_servers: CHANGEME
 
 # Gateway for Ops Manager network
@@ -329,6 +305,19 @@ opsman_ssh_password: CHANGEME
 # Pivnet token for downloading resources from Pivnet. Find this token at https://network.pivotal.io/users/dashboard/edit-profile
 pivnet_token: CHANGEME
 
+# Optional. If blank the cert(s) will be generated
+poe_ssl_name1:
+poe_ssl_cert1:
+poe_ssl_key1:
+
+poe_ssl_name2:
+poe_ssl_cert2:
+poe_ssl_key2:
+
+poe_ssl_name3:
+poe_ssl_cert3:
+poe_ssl_key3:
+
 # Request timeout for gorouter
 router_request_timeout_in_seconds: 900
 
@@ -355,7 +344,6 @@ saml_ssl_private_key:
 security_acknowledgement: CHANGEME
 
 # Services network
-is_service_network: CHANGEME           # Required select service network option in Ops man true or false
 services_excluded_range: CHANGEME      # Services network exclusion range
 services_network_name: "SERVICES"
 services_nw_azs: CHANGEME              # Comma separated list of AZ’s to be associated with this network
