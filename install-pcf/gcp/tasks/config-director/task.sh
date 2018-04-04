@@ -64,7 +64,6 @@ network_configuration=$(
       "networks": [
         {
           "name": $infra_network_name,
-          "service_network": false,
           "subnets": [
             {
               "iaas_identifier": $infra_vcenter_network,
@@ -78,7 +77,6 @@ network_configuration=$(
         },
         {
           "name": $deployment_network_name,
-          "service_network": false,
           "subnets": [
             {
               "iaas_identifier": $deployment_vcenter_network,
@@ -92,7 +90,6 @@ network_configuration=$(
         },
         {
           "name": $services_network_name,
-          "service_network": false,
           "subnets": [
             {
               "iaas_identifier": $services_vcenter_network,
@@ -106,7 +103,6 @@ network_configuration=$(
         },
         {
           "name": $dynamic_services_network_name,
-          "service_network": true,
           "subnets": [
             {
               "iaas_identifier": $dynamic_services_vcenter_network,
