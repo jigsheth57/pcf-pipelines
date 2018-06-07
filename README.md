@@ -8,7 +8,7 @@ Other pipelines which may be of interest are listed at the end of this README.
 
 ### Downloading PCF Pipelines
 
-**Please use the [Pivotal Network release](https://network.pivotal.io/products/pcf-automation/) of `pcf-pipelines` for stability. Tracking master is considered unstable, and is likely to result in breaking the pipelines that consume it.  If you are an internal Pivotal person (or partner), please contact the pcf-norm team to gain access to this release.**
+**Please use the [Pivotal Network release](https://network.pivotal.io/products/pcf-automation/) of `pcf-pipelines` for stability.  This link will result in 404 if you do not have access, to get access contact your Pivotal Support/Sales team.  Tracking master is considered unstable, and is likely to result in breaking the pipelines that consume it.**
 
 If you do not have access to the Pivotal Network release, and you are using the GitHub release, for stability, please ensure you are tagging the pipeline.yml:
 
@@ -19,8 +19,8 @@ If you do not have access to the Pivotal Network release, and you are using the 
   source:
     uri: https://github.com/pivotal-cf/pcf-pipelines
     branch: master
-    username: {{github_username}}
-    password: {{github_token}}
+    username: ((github_username))
+    password: ((github_token))
     tag_filter: v0.23.0
 ```
 
@@ -34,6 +34,14 @@ These pipelines are found in the `install-pcf` directory, sorted by IaaS.
 
 
 **Compatibility Matrix**
+
+| IAAS | pipelines release | OM version | ERT version |
+| :--- | --- | --- | --- |
+| vSphere | v23.3 | 2.0.x  | 2.1.x  |
+| Azure | v23.3 | 2.0.x | 2.1.x |
+| AWS | v23.3 | 2.0.x | 2.1.x |
+| GCP | v23.3 | 2.0.x  | 2.1.x  |
+| OpenStack | v23 | 2.0.x  | 2.1.x  |
 
 | IAAS | pipelines release | OM version | ERT version |
 | :--- | --- | --- | --- |
@@ -198,7 +206,7 @@ The pipelines and tasks in this repo follow a simple pattern which must be adher
 
 Each pipeline has a `pipeline.yml`, which contains the YAML for a single
 Concourse pipeline. Pipelines typically require parameters, either for resource
-names or for credentials, which are supplied externally via `{{placeholders}}`.
+names or for credentials, which are supplied externally via `((placeholders))`.
 
 A pipeline may have a `params.yml` file which is a template for the parameters
 that the pipeline requires. This template should have placeholder values,

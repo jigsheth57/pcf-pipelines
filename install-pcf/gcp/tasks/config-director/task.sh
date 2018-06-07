@@ -21,10 +21,7 @@ availability_zones="${GCP_ZONE_1},${GCP_ZONE_2},${GCP_ZONE_3}"
 az_configuration=$(
   jq -n \
     --arg availability_zones "$availability_zones" \
-    '
-    {
-      "availability_zones": ($availability_zones | split(",") | map({name: .}))
-    }'
+    '$availability_zones | split(",") | map({name: .})'
 )
 
 network_configuration=$(
@@ -71,7 +68,7 @@ network_configuration=$(
               "reserved_ip_ranges": $infra_reserved_ip_ranges,
               "dns": $infra_dns,
               "gateway": $infra_gateway,
-              "availability_zones": ($infra_availability_zones | split(","))
+              "availability_zone_names": ($infra_availability_zones | split(","))
             }
           ]
         },
@@ -84,7 +81,7 @@ network_configuration=$(
               "reserved_ip_ranges": $deployment_reserved_ip_ranges,
               "dns": $deployment_dns,
               "gateway": $deployment_gateway,
-              "availability_zones": ($deployment_availability_zones | split(","))
+              "availability_zone_names": ($deployment_availability_zones | split(","))
             }
           ]
         },
@@ -97,7 +94,7 @@ network_configuration=$(
               "reserved_ip_ranges": $services_reserved_ip_ranges,
               "dns": $services_dns,
               "gateway": $services_gateway,
-              "availability_zones": ($services_availability_zones | split(","))
+              "availability_zone_names": ($services_availability_zones | split(","))
             }
           ]
         },
@@ -110,7 +107,7 @@ network_configuration=$(
               "reserved_ip_ranges": $dynamic_services_reserved_ip_ranges,
               "dns": $dynamic_services_dns,
               "gateway": $dynamic_services_gateway,
-              "availability_zones": ($dynamic_services_availability_zones | split(","))
+              "availability_zone_names": ($dynamic_services_availability_zones | split(","))
             }
           ]
         }
@@ -157,8 +154,12 @@ network_assignment=$(
     --arg network "infrastructure" \
     '
     {
-      "singleton_availability_zone": ($availability_zones | split(",") | .[0]),
-      "network": $network
+      "singleton_availability_zone": {
+        "name": ($availability_zones | split(",") | .[0])
+      },
+      "network": {
+        "name": $network
+      }
     }'
 )
 
@@ -168,7 +169,7 @@ om-linux \
   --skip-ssl-validation \
   --username "$OPS_MGR_USR" \
   --password "$OPS_MGR_PWD" \
-  configure-bosh \
+  configure-director \
   --iaas-configuration "$iaas_configuration" \
   --director-configuration "$director_config" \
   --az-configuration "$az_configuration" \

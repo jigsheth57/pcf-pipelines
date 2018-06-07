@@ -198,6 +198,7 @@ cf_properties=$(
     --arg haproxy_backend_ca "$HAPROXY_BACKEND_CA" \
     --arg router_tls_ciphers "$ROUTER_TLS_CIPHERS" \
     --arg haproxy_tls_ciphers "$HAPROXY_TLS_CIPHERS" \
+    --arg frontend_idle_timeout "$FRONTEND_IDLE_TIMEOUT" \
     --arg routing_disable_http "$routing_disable_http" \
     --arg routing_custom_ca_certificates "$ROUTING_CUSTOM_CA_CERTIFICATES" \
     --arg routing_tls_termination $ROUTING_TLS_TERMINATION \
@@ -291,6 +292,7 @@ cf_properties=$(
       ".cloud_controller.allow_app_ssh_access": { "value": true },
       ".cloud_controller.security_event_logging_enabled": { "value": true },
       ".router.disable_insecure_cookies": { "value": false },
+      ".router.frontend_idle_timeout": { "value": $frontend_idle_timeout },
       ".mysql_monitor.recipient_email": { "value" : $mysql_monitor_recipient_email }
     }
 
@@ -327,7 +329,7 @@ cf_properties=$(
         ".properties.system_blobstore.external.resources_bucket": { "value": "\($terraform_prefix)-resources" },
         ".properties.system_blobstore.external.access_key": { "value": $aws_access_key },
         ".properties.system_blobstore.external.secret_key": { "value": { "secret": $aws_secret_key } },
-        ".properties.system_blobstore.external.signature_version.value": { "value": "4" },
+        ".properties.system_blobstore.external.signature_version": { "value": "4" },
         ".properties.system_blobstore.external.region": { "value": $aws_region },
         ".properties.system_blobstore.external.endpoint": { "value": $s3_endpoint }
       }

@@ -99,6 +99,7 @@ yaml_patch_linux \
   -o pcf-pipelines/operations/create-install-pcf-vsphere-offline-pipeline.yml \
   > pcf-pipelines/install-pcf/vsphere/offline/pipeline.yml
 
+
 echo "Creating install-pcf/vsphere/offline/params.yml"
 cp pcf-pipelines/install-pcf/vsphere{,/offline}/params.yml
 sed -i \

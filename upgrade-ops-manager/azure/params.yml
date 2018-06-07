@@ -27,8 +27,8 @@ git_private_key:
 # If you are using opsman_client_id/opsman_client_secret, edit opsman_admin_username/opsman_admin_password to be an empty value.
 opsman_client_id: CHANGEME
 opsman_client_secret: CHANGEME
-opsman_admin_password: CHANGEME
 opsman_admin_username: CHANGEME
+opsman_admin_password: CHANGEME
 
 # If install pipeline has been used then the passphrase is same as the admin password
 opsman_passphrase: CHANGEME
@@ -36,7 +36,7 @@ opsman_passphrase: CHANGEME
 # Ops Manager Url - FQDN to access Ops Manager without protocol (will use https), ex: opsmgr.example.com
 opsman_domain_or_ip_address: CHANGEME
 
-opsman_major_minor_version: CHANGEME # (e.g. 2\.[0-9\]+\.[0-9]+$)
+opsman_major_minor_version: ^2\.0\.[0-9]+$ # Ops Manager minor version to track (e.g ^2\.0\.[0-9]+$ will track 2.0.x versions)
 
 # Optional
 # Overwrite the existing VM disk size for Ops Manager

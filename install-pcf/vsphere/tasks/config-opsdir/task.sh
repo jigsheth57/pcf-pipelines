@@ -15,7 +15,7 @@ iaas_configuration=$(
   --arg bosh_template_folder "$BOSH_TEMPLATE_FOLDER" \
   --arg bosh_disk_path "$BOSH_DISK_PATH" \
   --argjson ssl_verification_enabled false \
-  --argjson nsx_networking_enabled $NSX_NETWORKING_ENABLED \
+  --argjson nsx_networking_enabled "$NSX_NETWORKING_ENABLED" \
   --arg nsx_address "$NSX_ADDRESS" \
   --arg nsx_username "$NSX_USERNAME" \
   --arg nsx_password "$NSX_PASSWORD" \
@@ -34,16 +34,26 @@ iaas_configuration=$(
     "bosh_disk_path": $bosh_disk_path,
     "ssl_verification_enabled": $ssl_verification_enabled,
     "nsx_networking_enabled": $nsx_networking_enabled,
-    "nsx_address": $nsx_address,
-    "nsx_username": $nsx_username,
-    "nsx_password": $nsx_password,
-    "nsx_ca_certificate": $nsx_ca_certificate
-  }'
+  }
+
+  +
+
+  # NSX networking. If not enabled, the following section is not required
+  if $nsx_networking_enabled then
+    {
+      "nsx_address": $nsx_address,
+      "nsx_username": $nsx_username,
+      "nsx_password": $nsx_password,
+      "nsx_ca_certificate": $nsx_ca_certificate
+    }
+  else
+    .
+  end
+  '
 )
 
 az_configuration=$(cat <<-EOF
-{
-  "availability_zones": [
+ [
     {
       "name": "$AZ_1",
       "cluster": "$AZ_1_CLUSTER_NAME",
@@ -59,8 +69,7 @@ az_configuration=$(cat <<-EOF
       "cluster": "$AZ_3_CLUSTER_NAME",
       "resource_pool": "$AZ_3_RP_NAME"
     }
-  ]
-}
+ ]
 EOF
 )
 
@@ -109,7 +118,7 @@ network_configuration=$(
               "reserved_ip_ranges": $infra_reserved_ip_ranges,
               "dns": $infra_dns,
               "gateway": $infra_gateway,
-              "availability_zones": ($infra_availability_zones | split(","))
+              "availability_zone_names": ($infra_availability_zones | split(","))
             }
           ]
         },
@@ -123,7 +132,7 @@ network_configuration=$(
               "reserved_ip_ranges": $deployment_reserved_ip_ranges,
               "dns": $deployment_dns,
               "gateway": $deployment_gateway,
-              "availability_zones": ($deployment_availability_zones | split(","))
+              "availability_zone_names": ($deployment_availability_zones | split(","))
             }
           ]
         },
@@ -137,7 +146,7 @@ network_configuration=$(
               "reserved_ip_ranges": $services_reserved_ip_ranges,
               "dns": $services_dns,
               "gateway": $services_gateway,
-              "availability_zones": ($services_availability_zones | split(","))
+              "availability_zone_names": ($services_availability_zones | split(","))
             }
           ]
         },
@@ -151,7 +160,7 @@ network_configuration=$(
               "reserved_ip_ranges": $dynamic_services_reserved_ip_ranges,
               "dns": $dynamic_services_dns,
               "gateway": $dynamic_services_gateway,
-              "availability_zones": ($dynamic_services_availability_zones | split(","))
+              "availability_zone_names": ($dynamic_services_availability_zones | split(","))
             }
           ]
         }
@@ -187,31 +196,33 @@ jq -n \
   --arg network "$INFRA_NETWORK_NAME" \
   '
   {
-    "singleton_availability_zone": ($infra_availability_zones | split(",") | .[0]),
-    "network": $network
+  "singleton_availability_zone": {
+    "name": ($infra_availability_zones | split(",") | .[0])
+  },
+  "network": {
+    "name": $network
+  }
   }'
 )
 
-echo "Configuring IaaS and Director..."
+echo "Configuring IaaS, AZ and Director..."
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   --skip-ssl-validation \
   --username "$OPS_MGR_USR" \
   --password "$OPS_MGR_PWD" \
-  configure-bosh \
+  configure-director \
   --iaas-configuration "$iaas_configuration" \
-  --director-configuration "$director_config"
+  --director-configuration "$director_config" \
+  --az-configuration "$az_configuration"
 
-om-linux -t https://$OPSMAN_DOMAIN_OR_IP_ADDRESS -k -u $OPS_MGR_USR -p $OPS_MGR_PWD \
-  curl -p "/api/v0/staged/director/availability_zones" \
-  -x PUT -d "$az_configuration"
-
+echo "Configuring Network and Security..."
 om-linux \
   --target https://$OPSMAN_DOMAIN_OR_IP_ADDRESS \
   --skip-ssl-validation \
   --username "$OPS_MGR_USR" \
   --password "$OPS_MGR_PWD" \
-  configure-bosh \
+  configure-director \
   --networks-configuration "$network_configuration" \
   --network-assignment "$network_assignment" \
   --security-configuration "$security_configuration"

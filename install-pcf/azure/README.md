@@ -61,7 +61,7 @@ the `Contributor` Role on the target Azure Project.
      --location "WestUS" \
      --sku "Standard_LRS"
 
-   AZURE_ACCOUNT_KEY=$(az storage account keys list --account-name pcfci --resource-group pcfci | jq -r .[0].value)
+   AZURE_STORAGE_ACCOUNT_KEY=$(az storage account keys list --account-name pcfci --resource-group pcfci | jq -r .[0].value)
 
    az storage container create --name terraformstate \
      --account-name pcfci
@@ -74,8 +74,8 @@ the `Contributor` Role on the target Azure Project.
     - The sample pipeline params file includes 2 params that set the major/minor versions of
       OpsMan and ERT that will be pulled.  They will typically default to the latest available tiles.
       ```
-      opsman_major_minor_version: 2\.[0-9\]+\.[0-9]+$
-      ert_major_minor_version: 2\.[0-9\]+\.[0-9]+$ 
+      opsman_major_minor_version: ^2\.0\.[0-9]+$ # Ops Manager minor version to track (e.g ^2\.0\.[0-9]+$ will track 2.0.x versions)
+      ert_major_minor_version: ^2\.0\.[0-9]+$ # ERT minor version to track (e.g ^2\.0\.[0-9]+$ will track 2.0.x versions)
       ```
 
 5. Log into concourse and create the pipeline.

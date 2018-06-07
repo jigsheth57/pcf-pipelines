@@ -27,7 +27,7 @@ function main() {
   opsman_path=$(ls "$curr_dir"/pivnet-opsmgr/*.{yml,yaml,ova} "$curr_dir"/pivnet-opsmgr/*_image 2>/dev/null | grep -v metadata.yaml)
 
   export GOVC_TLS_CA_CERTS=/tmp/vcenter-ca.pem
-  echo "$GOVC_CA_CERT" > $GOVC_TLS_CA_CERTS
+  echo "$GOVC_CA_CERT" > "$GOVC_TLS_CA_CERTS"
 
 IAAS_CONFIGURATION=$(cat <<-EOF
 {
@@ -59,7 +59,7 @@ EOF
 
   echo "Importing OVA of new OpsMgr VM..."
   echo "Running govc import.ova -options=opsman_settings.json ${opsman_path}"
-  govc import.ova -options=opsman_settings.json "${opsman_path}"
+  govc import.ova -options=opsman_settings.json -folder=${OPSMAN_VM_FOLDER} "${opsman_path}"
 
   echo "Setting CPUs on new OpsMgr VM... /${GOVC_DATACENTER}/${OPSMAN_VM_FOLDER}/${opsman_name}"
   govc vm.change -c=2 -vm="${opsman_name}"
@@ -77,7 +77,7 @@ EOF
   timeout=$((SECONDS+OPSMAN_TIMEOUT))
   set +e
   while ! $started; do
-      OUTPUT=$(govc vm.info -vm.ipath="${GOVC_DATACENTER}"/vm/"${opsman_name}" 2>&1)
+      OUTPUT=$(govc vm.info -vm.ipath="${GOVC_DATACENTER}/vm/${OPSMAN_VM_FOLDER}/${opsman_name}" 2>&1)
 
       if [[ $SECONDS -gt $timeout ]]; then
         echo "Timed out waiting for VM to start."
@@ -86,6 +86,7 @@ EOF
 
       if [[ $OUTPUT == *"no such VM"* ]]; then
         echo "...VM is not running! $OUTPUT"
+        sleep 3
       else
         echo "...VM is running! $OUTPUT"
         timeout=$((SECONDS+OPSMAN_TIMEOUT))
