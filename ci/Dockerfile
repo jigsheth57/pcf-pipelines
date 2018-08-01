@@ -41,12 +41,15 @@ pip install six --upgrade && \
 pip install awscli && \
 \
 # Openstack Client
-apt-get install -y --no-install-recommends libffi-dev && \
-pip install cryptography==2.0.3 pyOpenSSL==17.4.0 python-openstackclient pytz python-neutronclient && \
-\
+apt-get -y update && \
+apt-get -y install curl build-essential && \
+apt-get -y install python python-dev python-pip software-properties-common && \
+pip install --upgrade pip setuptools wheel && \
+pip install python-openstackclient python-neutronclient && \
+
 # Azure Client
 echo "deb https://packages.microsoft.com/repos/azure-cli/ wheezy main" | sudo tee /etc/apt/sources.list.d/azure-cli.list && \
-sudo apt-key adv --keyserver packages.microsoft.com --recv-keys 417A0893 && \
+curl -L https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - && \
 sudo apt-get -y install --no-install-recommends apt-transport-https && \
 sudo apt-get -y update && sudo apt-get -y install --no-install-recommends azure-cli && \
 \

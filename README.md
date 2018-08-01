@@ -1,3 +1,8 @@
+### Planned Deprecation
+Please note that this repository will be officially deprecated soon.
+
+### Description
+
 This is a collection of [Concourse](https://concourse-ci.org) pipelines for
 installing and upgrading [Pivotal Cloud Foundry](https://pivotal.io/platform).
 
@@ -12,7 +17,7 @@ Other pipelines which may be of interest are listed at the end of this README.
 
 If you do not have access to the Pivotal Network release, and you are using the GitHub release, for stability, please ensure you are tagging the pipeline.yml:
 
-```
+```yaml
  resources:
   - name: pcf-pipelines
   type: git
@@ -33,15 +38,23 @@ The desired output of these install pipelines is a PCF deployment that matches t
 These pipelines are found in the `install-pcf` directory, sorted by IaaS.
 
 
-**Compatibility Matrix**
+**Compatibility Matrix** 
 
 | IAAS | pipelines release | OM version | ERT version |
 | :--- | --- | --- | --- |
-| vSphere | v23.3 | 2.0.x  | 2.1.x  |
-| Azure | v23.3 | 2.0.x | 2.1.x |
-| AWS | v23.3 | 2.0.x | 2.1.x |
-| GCP | v23.3 | 2.0.x  | 2.1.x  |
-| OpenStack | v23 | 2.0.x  | 2.1.x  |
+| vSphere | v23.5 | 2.2.x  | 2.2.x  |
+| Azure | v23.5 | 2.2.x | 2.2.x |
+| AWS | v23.5 | 2.2.x | 2.2.x |
+| GCP | v23.5 | 2.2.x  | 2.2.x  |
+| OpenStack | v23 | 2.0.x  | 2.0.x  |
+
+| IAAS | pipelines release | OM version | ERT version |
+| :--- | --- | --- | --- |
+| vSphere | v23.3 | 2.1.x  | 2.1.x  |
+| Azure | v23.3 | 2.1.x | 2.1.x |
+| AWS | v23.3 | 2.1.x | 2.1.x |
+| GCP | v23.3 | 2.1.x  | 2.1.x  |
+| OpenStack | v23 | 2.0.x  | 2.0.x  |
 
 | IAAS | pipelines release | OM version | ERT version |
 | :--- | --- | --- | --- |
@@ -80,8 +93,8 @@ The upgrade-tile pipeline is compatible with the latest version of pcf-pipelines
 
 ## Prerequisites
 
-- [install a Concourse server](https://concourse-ci.org/installing.html)
-- download the [Fly CLI](https://concourse-ci.org/fly-cli.html) to interact with the Concourse server
+- [install a Concourse server](https://concourse-ci.org/install.html)
+- download the [Fly CLI](https://concourse-ci.org/fly.html) to interact with the Concourse server
 - depending on where you've installed Concourse, you may need to set up
 [additional firewall rules](FIREWALL.md "Firewall") to allow Concourse to reach
 third-party sources of pipeline dependencies

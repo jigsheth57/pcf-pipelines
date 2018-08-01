@@ -1,4 +1,6 @@
-Thanks for contributing to pcf-pipelines. To speed up the process of reviewing your pull request please provide us with:
+Thanks for submitting an pull request to pcf-pipelines.
+
+To speed up the process of reviewing your pull request please provide us with:
 
 * A short explanation of the proposed change:
 

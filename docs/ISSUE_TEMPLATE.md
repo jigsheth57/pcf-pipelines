@@ -1,4 +1,7 @@
-Thanks for submitting an issue to pcf-pipelines. To help us triage the issue, please fill out the following form as much as you can:
+Thanks for submitting an issue to pcf-pipelines.
+Please note that this repository will be officially deprecated soon.
+
+To help us triage the issue, please fill out the following form as much as you can:
 
 ## Issue
 
