@@ -82,7 +82,15 @@ jobs:
       OPSMAN_PASSWORD: {{opsman_admin_password}}
       ERRANDS_TO_DISABLE: {{scs_errands_to_disable}}
 
-  - task: deploy-scs
+- name: apply-changes
+  serial_groups: [opsman]
+  plan:
+  - aggregate:
+    - get: pcf-pipelines
+      trigger: false
+      passed: [deploy-scs]
+
+  - task: apply-changes
     file: pcf-pipelines/tasks/apply-changes/task.yml
     params:
       OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}

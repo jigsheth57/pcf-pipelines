@@ -1,0 +1,96 @@
+resource_types:
+- name: pivnet
+  type: docker-image
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
+
+resources:
+- name: pivnet-mysql
+  type: pivnet
+  source:
+    api_token: {{pivnet_token}}
+    product_slug: pivotal-mysql
+    product_version: {{mysql_major_minor_version}}
+    sort_by: semver
+
+- name: pcf-pipelines
+  type: git
+  source:
+    uri: https://github.com/jigsheth57/pcf-pipelines.git
+
+jobs:
+- name: upload-mysql
+  serial_groups: [opsman]
+  plan:
+  - aggregate:
+    - get: pcf-pipelines
+    - get: pivnet-product
+      resource: pivnet-mysql
+      params:
+        globs:
+        - "pivotal-mysql*.pivotal"
+  - task: upload-tile
+    file: pcf-pipelines/tasks/upload-product-and-stemcell/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
+      OPS_MGR_USR: {{opsman_admin_username}}
+      OPS_MGR_PWD: {{opsman_admin_password}}
+      PIVNET_API_TOKEN: {{pivnet_token}}
+      IAAS: "aws"
+      NO_PROXY: ""
+      OM_IP: ""
+  - task: stage-tile
+    file: pcf-pipelines/tasks/stage-product/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
+- name: deploy-mysql
+  serial_groups: [opsman]
+  plan:
+  - aggregate:
+    - get: pcf-pipelines
+      trigger: true
+      passed: [upload-mysql]
+
+  - task: configure-mysql
+    file: pcf-pipelines/install-mysql/tasks/configure-mysql/task.yml
+    params:
+      pcf_az_1: {{aws_az1}}
+      pcf_az_2: {{aws_az2}}
+      pcf_az_3: {{aws_az3}}
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPS_MGR_USR: {{opsman_admin_username}}
+      OPS_MGR_PWD: {{opsman_admin_password}}
+      INTERNET_CONNECTED: {{internet_connected}}
+      AWS_ACCESS_KEY_ID: {{aws_access_key_id}}
+      AWS_SECRET_ACCESS_KEY: {{aws_secret_access_key}}
+      S3_BUCKET_BACKUP: {{aws_s3_backup_bucket}}
+      S3_BUCKET_BACKUP_REGION: {{aws_s3_backup_region}}
+      S3_BUCKET_BACKUP_PATH: {{aws_s3_backup_bucket_path}}
+      S3_BUCKET_BACKUP_SCHEDULE: {{aws_s3_backup_bucket_schedule}}
+
+  - task: disable-errands
+    file: pcf-pipelines/tasks/disable-errands/task.yml
+    params:
+      PRODUCT_NAME: pivotal-mysql
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
+      ERRANDS_TO_DISABLE: {{mysql_errands_to_disable}}
+
+  - task: deploy-mysql
+    file: pcf-pipelines/tasks/apply-changes/task.yml
+    params:
+      OPSMAN_DOMAIN_OR_IP_ADDRESS: {{opsman_domain_or_ip_address}}
+      OPSMAN_CLIENT_ID: ""
+      OPSMAN_CLIENT_SECRET: ""
+      OPSMAN_USERNAME: {{opsman_admin_username}}
+      OPSMAN_PASSWORD: {{opsman_admin_password}}
