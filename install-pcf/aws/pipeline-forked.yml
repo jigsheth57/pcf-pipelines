@@ -226,7 +226,7 @@ jobs:
         - "cf*.pivotal"
     - get: terraform-state
       trigger: true
-      passed: [configure-director]
+      passed: [deploy-director]
   - task: upload-tile
     file: pcf-pipelines/tasks/upload-product-and-stemcell/task.yml
     params:
@@ -240,15 +240,6 @@ jobs:
       NO_PROXY: ""
       OM_IP: ""
 
-- name: configure-ert
-  serial_groups: [opsman]
-  plan:
-  - aggregate:
-    - get: pcf-pipelines
-    - get: terraform-state
-      trigger: true
-      passed: [upload-ert]
-
   - task: stage-tile
     file: pcf-pipelines/tasks/stage-product/task.yml
     params:
@@ -257,6 +248,15 @@ jobs:
       OPSMAN_CLIENT_SECRET: ""
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
+
+- name: configure-ert
+  serial_groups: [opsman]
+  plan:
+  - aggregate:
+    - get: pcf-pipelines
+    - get: terraform-state
+      trigger: true
+      passed: [upload-ert]
 
   - task: configure-ert
     file: pcf-pipelines/tasks/configure-ert/task.yml
