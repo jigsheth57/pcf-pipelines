@@ -1,5 +1,7 @@
-### Planned Deprecation
-Please note that this repository will be officially deprecated soon.
+# Deprecated
+Please note that there will not be updates made to this repository for future PAS or OM releases.
+
+2.4 is the last supported version.
 
 ### Description
 
@@ -39,6 +41,14 @@ These pipelines are found in the `install-pcf` directory, sorted by IaaS.
 
 
 **Compatibility Matrix** 
+
+| IAAS | pipelines release | OM version | ERT version |
+| :--- | --- | --- | --- |
+| vSphere | v23.12 | 2.4.x  | 2.4.x  |
+| Azure | v23.12 | 2.4.x | 2.4.x |
+| AWS | v23.12 | 2.4.x | 2.4.x |
+| GCP | v23.12 | 2.4.x  | 2.4.x  |
+| OpenStack | v23 | 2.0.x  | 2.0.x  |
 
 | IAAS | pipelines release | OM version | ERT version |
 | :--- | --- | --- | --- |
