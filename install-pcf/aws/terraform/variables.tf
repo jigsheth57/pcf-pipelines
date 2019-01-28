@@ -30,15 +30,15 @@ variable "opsman_allow_https_cidr_ranges" {
 
 variable "opsman_instance_type" {
     description = "Instance Type for OpsMan"
-    default = "m4.large"
+    default = "t3.large"
 }
 variable "nat_instance_type" {
     description = "Instance Type for NAT instances"
-    default = "t2.medium"
+    default = "t2.small"
 }
 variable "db_instance_type" {
     description = "Instance Type for RDS instance"
-    default = "db.m4.large"
+    default = "db.t2.medium"
 }
 
 variable "vpc_cidr" {

@@ -151,6 +151,8 @@ jobs:
       DB_CCDB_PASSWORD: {{db_ccdb_password}}
       DB_ACCOUNTDB_USERNAME: {{db_accountdb_username}}
       DB_ACCOUNTDB_PASSWORD: {{db_accountdb_password}}
+      DB_CREDHUB_USERNAME: {{db_credhub_username}}
+      DB_CREDHUB_PASSWORD: {{db_credhub_password}}
       DB_NETWORKPOLICYSERVERDB_USERNAME: {{db_networkpolicyserverdb_username}}
       DB_NETWORKPOLICYSERVERDB_PASSWORD: {{db_networkpolicyserverdb_password}}
       DB_NFSVOLUMEDB_USERNAME: {{db_nfsvolumedb_username}}
@@ -203,7 +205,7 @@ jobs:
   - aggregate:
     - get: pcf-pipelines
     - get: terraform-state
-      trigger: true
+      trigger: false
       passed: [configure-director]
   - task: deploy-director
     file: pcf-pipelines/tasks/apply-changes/task.yml
@@ -223,7 +225,7 @@ jobs:
       resource: pivnet-elastic-runtime
       params:
         globs:
-        - "cf*.pivotal"
+        - "srt*.pivotal"
     - get: terraform-state
       trigger: true
       passed: [deploy-director]
@@ -239,7 +241,6 @@ jobs:
       IAAS: "aws"
       NO_PROXY: ""
       OM_IP: ""
-
   - task: stage-tile
     file: pcf-pipelines/tasks/stage-product/task.yml
     params:
@@ -313,6 +314,8 @@ jobs:
       db_ccdb_password: {{db_ccdb_password}}
       db_accountdb_username: {{db_accountdb_username}}
       db_accountdb_password: {{db_accountdb_password}}
+      db_credhub_username: {{db_credhub_username}}
+      db_credhub_password: {{db_credhub_password}}
       db_networkpolicyserverdb_username: {{db_networkpolicyserverdb_username}}
       db_networkpolicyserverdb_password: {{db_networkpolicyserverdb_password}}
       db_nfsvolumedb_username: {{db_nfsvolumedb_username}}
