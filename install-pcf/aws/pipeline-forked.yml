@@ -205,7 +205,7 @@ jobs:
   - aggregate:
     - get: pcf-pipelines
     - get: terraform-state
-      trigger: false
+      trigger: true
       passed: [configure-director]
   - task: deploy-director
     file: pcf-pipelines/tasks/apply-changes/task.yml
@@ -225,7 +225,7 @@ jobs:
       resource: pivnet-elastic-runtime
       params:
         globs:
-        - "srt*.pivotal"
+        - "cf*.pivotal"
     - get: terraform-state
       trigger: true
       passed: [deploy-director]
